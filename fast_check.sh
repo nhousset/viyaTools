@@ -14,6 +14,15 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
+cho "cpuinfo"
+sudo ansible all -m shell -a "cat /proc/cpuinfo | grep processor |  wc -l" -i inventory.ini 2>/dev/null
+
+echo "total memory"
+sudo ansible all -m shell -a "vmstat -s | grep 'total memory' | awk '{print $1}'" -i inventory.ini 2>/dev/null
+
+echo "free space"
+sudo ansible all -m shell -a "df -h /" -i inventory.ini 2>/dev/null
+sudo ansible all -m shell -a "ls -lrt /opt/" -i inventory.ini 2>/dev/null
 
 echo -en  "${RED}Check Consul ${NC}\n"
 
