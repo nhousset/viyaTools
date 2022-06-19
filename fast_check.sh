@@ -15,17 +15,23 @@ BLUE='\033[034m'
 NC='\033[0m' 
 
 cho "cpuinfo"
-sudo ansible all -m shell -a "cat /proc/cpuinfo | grep processor |  wc -l" -i inventory.ini 2>/dev/null
+ansible all -m shell -a "cat /proc/cpuinfo | grep processor |  wc -l" -i inventory.ini 2>/dev/null
 
 echo "total memory"
-sudo ansible all -m shell -a "vmstat -s | grep 'total memory' | awk '{print $1}'" -i inventory.ini 2>/dev/null
+ansible all -m shell -a "vmstat -s | grep 'total memory' | awk '{print $1}'" -i inventory.ini 2>/dev/null
 
 echo "free space"
-sudo ansible all -m shell -a "df -h /" -i inventory.ini 2>/dev/null
-sudo ansible all -m shell -a "ls -lrt /opt/" -i inventory.ini 2>/dev/null
+ansible all -m shell -a "df -h /" -i inventory.ini 2>/dev/null
+ansible all -m shell -a "ls -lrt /opt/" -i inventory.ini 2>/dev/null
+
+echo -en  "${RED}Check process ${NC}\n"
+ansible all -m shell -a "ps auxw | grep '/opt/sas/viya' "
+ansible all -m shell -a "ps -u sas -f "
+ansible all -m shell -a "ps -u cas -f "
+ansible all -m shell -a "ps -u sasrabbitmq -f "
+ansible all -m shell -a "ps -u saspgpool -f "
 
 echo -en  "${RED}Check Consul ${NC}\n"
-
 
 cmd="sudo netstat -tupln | grep 8501"
 ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
@@ -53,7 +59,7 @@ echo
 
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 cmd="sudo /opt/sas/viya/home/sbin/rabbitmqctl node_health_check"
-  ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 echo -en  "${RED} Check sasdatasvrc${NC}\n"
 cmd="sudo /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status"
