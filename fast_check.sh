@@ -14,7 +14,7 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
-cho "cpuinfo"
+echo "cpuinfo"
 ansible all -m shell -a "cat /proc/cpuinfo | grep processor |  wc -l" -i inventory.ini 2>/dev/null
 
 echo "total memory"
@@ -25,11 +25,11 @@ ansible all -m shell -a "df -h /" -i inventory.ini 2>/dev/null
 ansible all -m shell -a "ls -lrt /opt/" -i inventory.ini 2>/dev/null
 
 echo -en  "${RED}Check process ${NC}\n"
-ansible all -m shell -a "ps auxw | grep '/opt/sas/viya' "
-ansible all -m shell -a "ps -u sas -f "
-ansible all -m shell -a "ps -u cas -f "
-ansible all -m shell -a "ps -u sasrabbitmq -f "
-ansible all -m shell -a "ps -u saspgpool -f "
+ansible all -m shell -a "ps auxw | grep '/opt/sas/viya' | wc -l "
+ansible all -m shell -a "ps -u sas -f  | wc -l "
+ansible all -m shell -a "ps -u cas -f  | wc -l "
+ansible all -m shell -a "ps -u sasrabbitmq -f  | wc -l "
+ansible all -m shell -a "ps -u saspgpool -f  | wc -l "
 
 echo -en  "${RED}Check Consul ${NC}\n"
 
