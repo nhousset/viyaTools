@@ -64,3 +64,7 @@ ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 echo -en  "${RED} Check sasdatasvrc${NC}\n"
 cmd="sudo /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status"
 ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+
+echo -en  "${RED} Check vault${NC}\n"
+cmd="sudo /opt/sas/viya/home/bin status"
+ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
