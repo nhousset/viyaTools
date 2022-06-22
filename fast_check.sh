@@ -61,6 +61,10 @@ echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 cmd="sudo /opt/sas/viya/home/sbin/rabbitmqctl node_health_check"
 ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
+echo -en  "${RED}rabbitMQ PID${NC}\n"
+rabbPid=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep pid)
+echo "$rabbPid" | tr -d '[{},pid'
+
 echo -en  "${RED} Check sasdatasvrc${NC}\n"
 cmd="sudo /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status"
 ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
