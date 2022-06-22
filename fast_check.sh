@@ -33,15 +33,14 @@ ansible all -m shell -a "ps -u saspgpool -f  | wc -l "
 
 echo -en  "${RED}Check Consul ${NC}\n"
 
-cmd="sudo netstat -tupln | grep 8501"
-ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+cmd="netstat -tupln | grep 8501"
+ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 
 
 source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$( cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
 /opt/sas/viya/home/bin/sas-csq consul-status
-
 /opt/sas/viya/home/bin/sas-bootstrap-config catalog services | grep serviceName
 
 
@@ -61,20 +60,20 @@ echo
 
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 cmd="sudo /opt/sas/viya/home/sbin/rabbitmqctl node_health_check"
-ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 echo -en  "${RED}rabbitMQ PID${NC}\n"
 rabbPid=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep pid)
 echo "$rabbPid" | tr -d '[{},pid'
 
 echo -en  "${RED} Check sasdatasvrc${NC}\n"
-cmd="sudo /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status"
-ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+cmd="/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status"
+ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 echo -en  "${RED} Check vault${NC}\n"
 cmd="sudo /opt/sas/viya/home/bin/vault status"
-ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 echo -en  "${RED} Check disabled services${NC}\n"
 cmd="cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'"
-ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
