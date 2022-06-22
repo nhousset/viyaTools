@@ -37,9 +37,11 @@ cmd="sudo netstat -tupln | grep 8501"
 ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 
+
 source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$( cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
-echo $CONSUL_HTTP_TOKEN
+/opt/sas/viya/home/bin/sas-csq consul-status
+
 /opt/sas/viya/home/bin/sas-bootstrap-config catalog services | grep serviceName
 
 
@@ -71,4 +73,8 @@ ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 echo -en  "${RED} Check vault${NC}\n"
 cmd="sudo /opt/sas/viya/home/bin/vault status"
+ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+
+echo -en  "${RED} Check disabled services${NC}\n"
+cmd="cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'"
 ansible deployTarget -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
