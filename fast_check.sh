@@ -43,6 +43,7 @@ export CONSUL_HTTP_TOKEN=$( cat /opt/sas/viya/config/etc/SASSecurityCertificateF
 /opt/sas/viya/home/bin/sas-csq consul-status
 /opt/sas/viya/home/bin/sas-bootstrap-config catalog services | grep serviceName
 
+curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
 
 echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
 echo -en  "${YELLOW}saslogon${NC}\n"
