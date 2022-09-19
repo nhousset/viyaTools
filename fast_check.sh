@@ -74,6 +74,12 @@ echo -en  "${RED} Check vault${NC}\n"
 cmd="sudo /opt/sas/viya/home/bin/vault status"
 ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
+
+export SSL_CERT_FILE=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
+/opt/sas/viya/home/bin/vault version
+/opt/sas/viya/home/bin/vault status
+curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SA
+
 echo -en  "${RED} Check disabled services${NC}\n"
 cmd="cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'"
 ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
