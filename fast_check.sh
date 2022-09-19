@@ -14,6 +14,10 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
+
+ systemctl list-units | grep sas-viya
+ 
+ 
 echo "cpuinfo"
 ansible all -m shell -a "cat /proc/cpuinfo | grep processor |  wc -l" -i inventory.ini 2>/dev/null
 
