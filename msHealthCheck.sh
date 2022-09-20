@@ -22,29 +22,7 @@ NC='\033[0m'
 for arg in "$@" ; do
   case "$arg" in
     --debug)
-      DEBUG=1;;
-    --os-packages-only)
-      OS_PACKAGES_ONLY=1;;
-    --install-only)
-      INSTALL_ONLY=1;;
-    --no-self-upgrade)
-      # Do not upgrade this script (also prevents client upgrades, because each
-      # copy of the script pins a hash of the python client)
-      NO_SELF_UPGRADE=1;;
-    --no-permissions-check)
-      NO_PERMISSIONS_CHECK=1;;
-    --no-bootstrap)
-      NO_BOOTSTRAP=1;;
-    --help)
-      HELP=1;;
-    --noninteractive|--non-interactive)
-      NONINTERACTIVE=1;;
-    --quiet)
-      QUIET=1;;
-    renew)
-      ASSUME_YES=1;;
-    --verbose)
-      VERBOSE=1;;
+      DEBUG=1;;   
     -[!-]*)
       OPTIND=1
       while getopts ":onvq" short_arg $arg; do
@@ -62,6 +40,7 @@ for arg in "$@" ; do
   esac
 done
 
+echo "DEBUG : "$DEBUG
 exit
 
 
