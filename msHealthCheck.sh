@@ -207,10 +207,16 @@ cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
 
 echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
 sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
-echo $sasperm
+if [ "$sasperm" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm)" : " "${RED}KO${NC}\n"   
+fi
+
 
 sasauth=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
-echo sasauth
+echo $sasauth
 
 elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
 echo $elssrv
