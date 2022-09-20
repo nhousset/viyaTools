@@ -139,6 +139,11 @@ echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
+echo -en  "${YELLOW}sas-ops env${NC}\n"
+/opt/sas/viya/home/bin/sas-ops env
+
+echo -en  "${YELLOW}sas-ops info${NC}\n"
+/opt/sas/viya/home/bin/sas-ops info
 
 echo ""
 echo -en "${RED}******************************************${NC}\n"   
@@ -290,6 +295,27 @@ echo -en  "${NC}pgpool0 : operation_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
 
 
+echo -en  "${YELLOW}Audit${NC}\n"
+ls -la /opt/sas/viya/config/var/cache/auditcli
+
+
+echo -en  "${YELLOW}Web App${NC}\n"
+echo -en  "${NC}SASDrive : "
+if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/) == 200 ]]
+then
+	SASDrive="OK"
+else
+    if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/) == 401 ]]
+    then
+	  	SASDrive="OK"
+    else
+       if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/ ) == 403 ]]
+    then
+	  	SASDrive="OK"
+    fi
+    fi
+fi
+echo -en  $SASDrive"\n"
 
 
 echo ""
@@ -300,6 +326,13 @@ echo ""
 echo -en  "${YELLOW}Check disabled services${NC}\n"
 cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
 echo ""
+
+echo -en  "${YELLOW}sas-ops validate${NC}\n"
+/opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
+
+echo -en  "${YELLOW}sas-ops validate${NC}\n"
+/opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
+
 
 echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
 sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
