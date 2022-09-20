@@ -117,15 +117,16 @@ echo -en  "${RED}rabbitMQ ${NC}\n"
 
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
+echo ""
 
 echo "\ \    / /\  | |  | | | |__   __|"
 echo "  \ \  / /  \ | |  | | |    | |  "
 echo "   \ \/ / /\ \| |  | | |    | |  "
 echo "    \  / ____ \ |__| | |____| |  " 
 echo "     \/_/    \_\____/|______|_|  "
-                               
+echo ""                               
 echo -en  "${YELLOW}Vault version ${NC} : "
-opt/sas/viya/home/bin/vault version
+/opt/sas/viya/home/bin/vault version
 echo -en "\n"                              
 
 echo -en  "${YELLOW}Vault status ${NC}\n"
