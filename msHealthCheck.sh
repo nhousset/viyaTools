@@ -137,5 +137,5 @@ echo -en  "${RED} Check sasdatasvrc${NC}\n"
 
 
 echo -en  "${RED} Check disabled services${NC}\n"
-cmd="cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'"
-ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
+
