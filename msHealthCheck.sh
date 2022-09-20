@@ -22,30 +22,21 @@ NC='\033[0m'
 for arg in "$@" ; do
   case "$arg" in
     --debug)
-      DEBUG=1;;   
-    -[!-]*)
-      while getopts ":o:g:" option; do
-    	case "${option}" in
-        o)
-	    outputMode=FILE
-            ;;
-        g)
-            g=${OPTARG}
-            ;;
-    	esac
-	done
+      _GLOBAL_DEBUG=1;; 
+    --batch)
+      _GLOBAL_BATCH=1;;  
   esac
 done
 
-echo "outputMode : "$outputMode
-echo "DEBUG : "$DEBUG
+echo "_GLOBAL_BATCH : "$_GLOBAL_BATCH
+echo "_GLOBAL_DEBUG : "$_GLOBAL_DEBUG
 
-if [ ${outputMode} == "FILE" ]
+if [ ${_GLOBAL_BATCH} == 1 ]
 then
 	logfile=/tmp/SASmsHealthCheck_$$.log
 	exec > $logfile 2>&1
 fi
-
+exit
 
 _GLOBAL_HTTPD_STATUS="KO"
 
