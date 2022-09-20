@@ -1,11 +1,10 @@
 #!/bin/bash 
 
 # *********************************************************
-# *** Check rapide de VIYA 3.5
+# *** Micro Service Health Check VIYA 3.5
 # *** (c) Nicolas Housset
 # *** https://www.nicolas-housset.fr
 # ***
-# *** Copier ce shell dans sas_viya_playbook
 # *********************************************************
 
 RED='\033[031m'
@@ -15,25 +14,45 @@ BLUE='\033[034m'
 NC='\033[0m' 
 
 
+echo "cpuinfo"
+cat /proc/cpuinfo | grep processor |  wc -l
+
+echo "total memory"
+vmstat -s | grep 'total memory' | awk '{print $1}'
+
+echo "free space"
+df -h /opt/
+df -h /var/log
+
+
+
+
+echo -en  "${RED}Check process ${NC}\n"
+echo -en  "${RED}==================================================${NC}\n"
+echo -en  "${YELLOW}ps auxw | grep '/opt/sas/viya'${NC} : "
+ps auxw | grep '/opt/sas/viya'  | grep -v grep | wc -l
+echo -en "\n"
+echo -en  "${YELLOW}ps -u sas -f ${NC} : "
+ps -u sas -f  | grep -v grep | wc -l
+echo -en "\n"
+echo -en  "${YELLOW}ps -u cas -f${NC} : "
+ps -u cas -f  | grep -v grep | wc -l
+echo -en "\n"
+echo -en  "${YELLOW}sasrabbitmq${NC} : "
+ps -u sasrabbitmq -f   | grep -v grep | wc -l
+echo -en "\n"
+echo -en  "${YELLOW}saspgpool${NC} : "
+ps -u saspgpool -f   | grep -v grep | wc -l
+echo -en "\n"
+
+exit
+
+
  systemctl list-units | grep sas-viya
  
  
-echo "cpuinfo"
-ansible all -m shell -a "cat /proc/cpuinfo | grep processor |  wc -l" -i inventory.ini 2>/dev/null
 
-echo "total memory"
-ansible all -m shell -a "vmstat -s | grep 'total memory' | awk '{print $1}'" -i inventory.ini 2>/dev/null
 
-echo "free space"
-ansible all -m shell -a "df -h /" -i inventory.ini 2>/dev/null
-ansible all -m shell -a "ls -lrt /opt/" -i inventory.ini 2>/dev/null
-
-echo -en  "${RED}Check process ${NC}\n"
-ansible all -m shell -a "ps auxw | grep '/opt/sas/viya' | wc -l "
-ansible all -m shell -a "ps -u sas -f  | wc -l "
-ansible all -m shell -a "ps -u cas -f  | wc -l "
-ansible all -m shell -a "ps -u sasrabbitmq -f  | wc -l "
-ansible all -m shell -a "ps -u saspgpool -f  | wc -l "
 
 echo -en  "${RED}Check Consul ${NC}\n"
 
