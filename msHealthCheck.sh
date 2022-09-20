@@ -34,9 +34,6 @@ for arg in "$@" ; do
         g)
             g=${OPTARG}
             ;;
-        *)
-            usage
-            ;;
     esac
 done
   esac
