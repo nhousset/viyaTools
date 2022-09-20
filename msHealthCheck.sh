@@ -13,7 +13,7 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
-
+echo -en  "\n"
 echo -en  "${RED}Check system ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 echo -en  "${YELLOW}CPU Info'${NC}\"n
@@ -23,7 +23,7 @@ echo -en  "${YELLOW}Disk space'${NC}\"n
 df -h /opt/
 df -h /var/log
 
-
+echo -en  "\n"
 echo -en  "${RED}Check process ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 echo -en  "${YELLOW}ps auxw | grep '/opt/sas/viya'${NC} : "
