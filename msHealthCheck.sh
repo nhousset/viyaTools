@@ -265,7 +265,7 @@ else
   echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
 fi
 
-elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsrd-xr-x")
+elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
 if [ "$elssrv" != "" ]
 then
   echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
@@ -281,6 +281,13 @@ else
   echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
 fi
 
+
+
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** GLOBAL HEALTH-CHECK${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
 
 if [ "$_GLOBAL_VAULT_STATUS" == "OK" ]
 then
