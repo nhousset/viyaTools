@@ -95,6 +95,16 @@ echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
+
+echo ""
+echo -en "${RED}******************************************${NC}\n"   
+echo -en "${RED}*** SASSecurityCertificateFramework ${NC}\n"                                      
+echo -en "${RED}******************************************${NC}\n"   
+echo ""
+ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
+ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/private/sasdatasvrc/postgres/pgpool0/saskey.pem
+ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
+
 echo ""
 echo -en "${RED}************************${NC}\n"   
 echo -en "${RED}*** CONSUL${NC}\n"                                      
