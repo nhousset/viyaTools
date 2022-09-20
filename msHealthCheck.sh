@@ -25,21 +25,24 @@ for arg in "$@" ; do
       DEBUG=1;;   
     -[!-]*)
       OPTIND=1
-      while getopts ":onvq" short_arg $arg; do
-        case "$short_arg" in
-          o)
-            echo "arg :"${OPTARG};;
-          n)
-            NONINTERACTIVE=1;;
-          q)
-            QUIET=1;;
-          v)
-            VERBOSE=1;;
-        esac
-      done;;
+      while getopts ":v:g:" option; do
+    case "${option}" in
+        v)
+            v=${OPTARG}
+            ((v == 15 || v == 75)) || usage
+            ;;
+        g)
+            g=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
   esac
 done
 
+echo "OPTIND : "$OPTIND
 echo "DEBUG : "$DEBUG
 exit
 
