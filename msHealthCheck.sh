@@ -14,17 +14,14 @@ BLUE='\033[034m'
 NC='\033[0m' 
 
 
-echo "cpuinfo"
+echo -en  "${RED}Check system ${NC}\n"
+echo -en  "${RED}==================================================${NC}\n"
+echo -en  "${YELLOW}CPU Info'${NC}\"n
 cat /proc/cpuinfo | grep processor |  wc -l
-
-echo "total memory"
-vmstat -s | grep 'total memory' | awk '{print $1}'
-
-echo "free space"
+echo -en  "${YELLOW}Memory'${NC}\"n
+echo -en  "${YELLOW}Disk space'${NC}\"n
 df -h /opt/
 df -h /var/log
-
-
 
 
 echo -en  "${RED}Check process ${NC}\n"
