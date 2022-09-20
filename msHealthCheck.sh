@@ -37,14 +37,13 @@ echo -en "${RED} / ' . \ ${NC}             \ \_/ /_| |_  | || | | |      | | | |
 echo -en "${RED} \/|_|\/ ${NC}              \___/ \___/  \_/\_| |_/      \_| |_/\____/\_| |_/\_____/\_/ \_| |_/       \____/\_| |_/\____/ \____/\_| \_/            ${RED} \/|_|\/ ${NC}\n"
 echo ""                                                                                                                                                       
            
-	   
-echo "_GLOBAL_BATCH : "$_GLOBAL_BATCH
-echo "_GLOBAL_DEBUG : "$_GLOBAL_DEBUG
+_GLOBAL_LOG_FILE=/tmp/SASmsHealthCheck_$$.log
+
 
 if [ "${_GLOBAL_BATCH}" == "1" ]
 then
-	logfile=/tmp/SASmsHealthCheck_$$.log
-	exec > $logfile 2>&1
+	echo "msHealthCheck.sh s'execute en mode BATCH. L'output se fait dans le fichier $_GLOBAL_LOG_FILE"
+	exec > $_GLOBAL_LOG_FILE 2>&1
 fi
 
 _GLOBAL_HTTPD_STATUS="KO"
