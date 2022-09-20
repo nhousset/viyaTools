@@ -10,7 +10,7 @@
 
 source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
-
+export SSL_CERT_FILE=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
 
 RED='\033[031m'
 GREEN='\033[032m'
@@ -18,6 +18,14 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
+echo "███    ███ ███████     ██   ██ ███████  █████  ██      ████████ ██   ██      ██████ ██   ██ ███████  ██████ ██   ██"
+echo "████  ████ ██          ██   ██ ██      ██   ██ ██         ██    ██   ██     ██      ██   ██ ██      ██      ██  ██ "
+echo "██ ████ ██ ███████     ███████ █████   ███████ ██         ██    ███████     ██      ███████ █████   ██      █████  " 
+echo "██  ██  ██      ██     ██   ██ ██      ██   ██ ██         ██    ██   ██     ██      ██   ██ ██      ██      ██  ██ " 
+echo "██      ██ ███████     ██   ██ ███████ ██   ██ ███████    ██    ██   ██      ██████ ██   ██ ███████  ██████ ██   ██" 
+                                                                                                                    
+                                                                                                                    
+                                                                                                                    
 echo -en  "\n"
 echo -en  "${RED}Check system ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
@@ -83,68 +91,41 @@ echo -en "\n"
 echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
 echo -en  "${YELLOW}saslogon${NC}\n"
 echo
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/saslogon
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/saslogon
 echo
 echo -en  "${YELLOW}compute${NC}\n"
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/compute
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/compute
 echo
 echo -en  "${YELLOW}Compute/StudioV ${NC}\n"
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/modelstudio
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/modelstudio
 echo 
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/sasstudioV
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/sasstudioV
 echo
-exit
-
-
-
  
- 
-
-
-
-
-source /opt/sas/viya/config/consul.conf
-export CONSUL_HTTP_TOKEN=$( cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
-/opt/sas/viya/home/bin/sas-csq consul-status
-/opt/sas/viya/home/bin/sas-bootstrap-config catalog services | grep serviceName
-
-curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
-
-echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
-echo -en  "${YELLOW}saslogon${NC}\n"
-echo
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/saslogon
-echo
-echo -en  "${YELLOW}compute${NC}\n"
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/compute
-echo
-echo -en  "${YELLOW}Compute/StudioV ${NC}\n"
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/modelstudio
-echo 
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/sasstudioV
-echo
-
-echo -en  "${RED}Health Check rabbitMQ${NC}\n"
-cmd="sudo /opt/sas/viya/home/sbin/rabbitmqctl node_health_check"
-ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
-
 echo -en  "${RED}rabbitMQ PID${NC}\n"
 rabbPid=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep pid)
 echo "$rabbPid" | tr -d '[{},pid'
 
-echo -en  "${RED} Check sasdatasvrc${NC}\n"
-cmd="/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status"
-ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
+echo -en  "${RED}Health Check rabbitMQ${NC}\n"
+/opt/sas/viya/home/sbin/rabbitmqctl node_health_check
+
 
 echo -en  "${RED} Check vault${NC}\n"
-cmd="sudo /opt/sas/viya/home/bin/vault status"
-ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
-
-
-export SSL_CERT_FILE=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
 /opt/sas/viya/home/bin/vault version
 /opt/sas/viya/home/bin/vault status
-curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SA
+
+cat /opt/sas/viya/config/etc/vault/default/vault.hcl
+
+
+curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/vault.token)\"" 
+
+openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
+
+
+echo -en  "${RED} Check sasdatasvrc${NC}\n"
+/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
+
+
 
 echo -en  "${RED} Check disabled services${NC}\n"
 cmd="cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'"
