@@ -216,10 +216,25 @@ fi
 
 
 sasauth=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
-echo $sasauth
+if [ "$sasauth" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
+fi
 
-elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
-echo $elssrv
+elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsrd-xr-x")
+if [ "$elssrv" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
+fi
 
 caslaunch=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch | grep "rwsr-xr-x")
-echo $caslaunch
+if [ "$caslaunch" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
+fi
