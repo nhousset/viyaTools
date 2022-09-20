@@ -89,14 +89,14 @@ echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
-
-echo -en  "${RED}CONSUL${NC}\n"                                      
-                                          
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** CONSUL${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
 echo -en  "${YELLOW}netstat${NC}\n"                                         
 netstat -tupln | grep 8501
 
-echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
-ls -lrt /opt/sas/viya/config/var/lib/rabbitmsq-server/sasrabbitmq/.erlang.cookie 
 
 echo -en  "${YELLOW}status${NC}\n"     
 /opt/sas/viya/home/bin/sas-csq consul-status
@@ -119,13 +119,28 @@ echo
 curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/sasstudioV
 echo
  
-echo -en  "${RED}rabbitMQ ${NC}\n"
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** RabbitMQ${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+
+
+echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
+ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie 
+
+echo -en  "${YELLOW}rabbitMQ status ${NC}\n"
 /etc/init.d/sas-viya-rabbitmq-server-default status 
 
-echo -en  "${RED}Health Check rabbitMQ${NC}\n"
+echo -en  "${YELLOW}rabbitMQ Health Check ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
 
-echo -en  "${RED}VAULT${NC}\n"
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** VAULT${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+
 echo -en  "${YELLOW}Vault version ${NC} : "
 /opt/sas/viya/home/bin/vault version
 echo -en "\n"                              
