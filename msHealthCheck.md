@@ -17,4 +17,4 @@ You can use the --batch option to redirect the audit results to a file.
 msHealthCheck.sh --batch
 ```
 
-The output file is written to /tmp/ as SASmsHealthCheck_<PID>.log
+The output file is written to /tmp/ as SASmsHealthCheck_PID.log
