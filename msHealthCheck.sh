@@ -18,6 +18,13 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
+
+_GLOBAL_RABBITMQ_STATUS="KO"
+_GLOBAL_VAULT_STATUS="KO"
+_GLOBAL_NODE_STATUS="KO"
+_GLOBAL_PGPOOL_STATUS="KO"
+
+
 echo ""
 echo -en "${RED}    _    ${NC}              _   _ _______   _____         _   _  _____  ___   _    _____ _   _        _____  _   _  _____ _____  _   __            ${RED}    _    ${NC}\n"
 echo -en "${RED} /\| |/\ ${NC}             | | | |_   _\ \ / / _ \       | | | ||  ___|/ _ \ | |  |_   _| | | |      /  __ \| | | ||  ___/  __ \| | / /            ${RED} /\| |/\ ${NC}\n"
@@ -149,6 +156,12 @@ ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie
 echo -en  "${YELLOW}rabbitMQ status ${NC}\n"
 /etc/init.d/sas-viya-rabbitmq-server-default status 
 
+statusRun=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep "service is running")
+if [ "$statusRun" != "" ]
+then
+  _GLOBAL_RABBITMQ_STATUS="OK"
+fi
+
 echo -en  "${YELLOW}rabbitMQ Health Check ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
 
@@ -183,12 +196,7 @@ echo -en  "${YELLOW}Vault ssl test ${NC}\n"
 openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
 
 
-if [ "$_GLOBAL_VAULT_STATUS" == "OK" ]
-then
-  echo -en "Vault : ${GREEN}OK${NC}\n"
-else
-   echo -en "Vault : ${RED}KO${NC}\n"
-fi
+
 
 
 echo ""
@@ -198,8 +206,7 @@ echo -en "${RED}************************${NC}\n"
 echo ""
 echo -en  "${YELLOW}SASDatasvrc status${NC}\n"
 
-_GLOBAL_NODE_STATUS="KO"
-_GLOBAL_PGPOOL_STATUS="KO"
+
 
 /etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status
 statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status | grep "is running with PID")
@@ -229,20 +236,6 @@ echo -en  "${NC}pgpool0 : operation_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
 
 
-# GLOBAL
-if [ "$_GLOBAL_NODE_STATUS" == "OK" ]
-then
-  echo -en "sasdatasvrc-postgres-node0 : ${GREEN}OK${NC}\n"
-else
-   echo -en "sasdatasvrc-postgres-node0 : ${RED}KO${NC}\n"
-fi
-
-if [ "$_GLOBAL_PGPOOL_STATUS" == "OK" ]
-then
-  echo -en "sasdatasvrc-postgres-pgpool0 : ${GREEN}OK${NC}\n"
-else
-   echo -en "sasdatasvrc-postgres-pgpool0 : ${RED}KO${NC}\n"
-fi
 
 
 echo ""
@@ -287,3 +280,38 @@ then
 else
   echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
 fi
+
+
+if [ "$_GLOBAL_VAULT_STATUS" == "OK" ]
+then
+  echo -en "Vault : ${GREEN}OK${NC}\n"
+else
+   echo -en "Vault : ${RED}KO${NC}\n"
+fi
+
+
+if [ "$_GLOBAL_RABBITMQ_STATUS" == "OK" ]
+then
+  echo -en "RabbitMQ : ${GREEN}OK${NC}\n"
+else
+   echo -en "RabbitMQ : ${RED}KO${NC}\n"
+fi
+
+
+
+if [ "$_GLOBAL_NODE_STATUS" == "OK" ]
+then
+  echo -en "sasdatasvrc-postgres-node0 : ${GREEN}OK${NC}\n"
+else
+   echo -en "sasdatasvrc-postgres-node0 : ${RED}KO${NC}\n"
+fi
+
+if [ "$_GLOBAL_PGPOOL_STATUS" == "OK" ]
+then
+  echo -en "sasdatasvrc-postgres-pgpool0 : ${GREEN}OK${NC}\n"
+else
+   echo -en "sasdatasvrc-postgres-pgpool0 : ${RED}KO${NC}\n"
+fi
+
+
+
