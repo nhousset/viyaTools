@@ -19,6 +19,11 @@ BLUE='\033[034m'
 NC='\033[0m' 
 
 
+_GLOBAL_HTTPD_STATUS="KO"
+
+_GLOBAL_CONSUL_STATUS="KO"
+_GLOBAL_CONSUL_CONFIG="KO"
+
 _GLOBAL_RABBITMQ_STATUS="KO"
 _GLOBAL_RABBITMQ_CONFIG="KO"
 
@@ -100,6 +105,21 @@ netstat -tupln | grep :80
 netstat -tupln | grep :443
 
 
+if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost) == 200 ]]
+then
+	_GLOBAL_HTTPD_STATUS="OK"
+else
+    if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost) == 401 ]]
+    then
+	  	_GLOBAL_HTTPD_STATUS="OK"
+    else
+       if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost ) == 403 ]]
+    then
+	  	_GLOBAL_HTTPD_STATUS="OK"
+    fi
+    fi
+fi
+
 echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
@@ -126,6 +146,11 @@ netstat -tupln | grep :8501
 
 echo -en  "${YELLOW}status${NC}\n"     
 /opt/sas/viya/home/bin/sas-csq consul-status
+statusRun=$(/opt/sas/viya/home/bin/sas-csq consul-status | grep "leader")
+if [ "$statusRun" != "" ]
+then
+  _GLOBAL_CONSUL_STATUS="OK"
+fi
 
 echo -en  "${YELLOW}Agents${NC}\n"     
 curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
@@ -302,6 +327,22 @@ echo -en "${RED}************************${NC}\n"
 echo -en "${RED}*** GLOBAL HEALTH-CHECK${NC}\n"                                      
 echo -en "${RED}************************${NC}\n"   
 echo ""
+
+
+
+if [ "$_GLOBAL_HTTPD_STATUS" == "OK" ]
+then
+  echo -en "httpd : ${GREEN}OK${NC}\n"
+else
+   echo -en "httpd : ${RED}KO${NC}\n"
+fi
+
+if [ "$_GLOBAL_CONSUL_STATUS" == "OK" ]
+then
+  echo -en "Consul : ${GREEN}OK${NC}\n"
+else
+   echo -en "Consul : ${RED}KO${NC}\n"
+fi
 
 if [ "$_GLOBAL_VAULT_STATUS" == "OK" ]
 then
