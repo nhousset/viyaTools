@@ -154,7 +154,7 @@ echo ""
 
 echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
 
-erlang=$(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie | grep "-r--------")
+erlang=$(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie | grep "r--------")
 if [ "$erlang" != "" ]
 then
   echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${GREEN}OK${NC}\n"   
