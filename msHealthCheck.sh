@@ -90,14 +90,7 @@ echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
 
-echo ""
-echo "   _____ ____  _   _  _____ _    _ _      "
-echo "  / ____/ __ \| \ | |/ ____| |  | | |     "
-echo " | |   | |  | |  \| | (___ | |  | | |     "
-echo " | |   | |  | | . ` |\___ \| |  | | |     "
-echo " | |___| |__| | |\  |____) | |__| | |____ "
-echo "  \_____\____/|_| \_|_____/ \____/|______|"
-                                          
+echo -en  "${RED}CONSUL${NC}\n"                                      
                                           
 echo -en  "${YELLOW}netstat${NC}\n"                                         
 netstat -tupln | grep 8501
@@ -132,13 +125,7 @@ echo -en  "${RED}rabbitMQ ${NC}\n"
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
 
-echo ""
-echo " \ \    / /\  | |  | | | |__   __|"
-echo "  \ \  / /  \ | |  | | |    | |  "
-echo "   \ \/ / /\ \| |  | | |    | |  "
-echo "    \  / ____ \ |__| | |____| |  " 
-echo "     \/_/    \_\____/|______|_|  "
-echo ""                               
+echo -en  "${RED}VAULT${NC}\n"
 echo -en  "${YELLOW}Vault version ${NC} : "
 /opt/sas/viya/home/bin/vault version
 echo -en "\n"                              
@@ -157,11 +144,11 @@ echo -en  "${YELLOW}Vault ssl test ${NC}\n"
 openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
 
 
-echo -en  "${RED} Check sasdatasvrc${NC}\n"
+echo -en  "${RED}SASDatasvrc${NC}\n"
 /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
 
 
-
+echo -en  "${RED}Other check${NC}\n"
 echo -en  "${RED} Check disabled services${NC}\n"
 cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
 
