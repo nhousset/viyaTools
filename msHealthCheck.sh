@@ -85,6 +85,12 @@ echo -en  "${YELLOW}**** sas-viya services *** ${NC}\n"
 systemctl list-units | grep sas-viya
 echo -en "\n"
 
+
+echo -en  "${YELLOW}Apache${NC}\n"                                         
+netstat -tupln | grep :80
+netstat -tupln | grep :443
+
+
 echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
@@ -95,7 +101,7 @@ echo -en "${RED}*** CONSUL${NC}\n"
 echo -en "${RED}************************${NC}\n"   
 echo ""
 echo -en  "${YELLOW}netstat${NC}\n"                                         
-netstat -tupln | grep 8501
+netstat -tupln | grep :8501
 
 
 echo -en  "${YELLOW}status${NC}\n"     
