@@ -47,10 +47,10 @@ for arg in "$@" ; do
       VERBOSE=1;;
     -[!-]*)
       OPTIND=1
-      while getopts ":hnvq" short_arg $arg; do
+      while getopts ":onvq" short_arg $arg; do
         case "$short_arg" in
-          h)
-            HELP=1;;
+          o)
+            echo "arg :"$arg;;
           n)
             NONINTERACTIVE=1;;
           q)
