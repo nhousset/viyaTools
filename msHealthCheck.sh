@@ -181,7 +181,23 @@ echo -en "${RED}*** SASDatasvrc${NC}\n"
 echo -en "${RED}************************${NC}\n"   
 echo ""
 echo -en  "${YELLOW}SASDatasvrc status${NC}\n"
+
+_GLOBAL_NODE_STATUS="KO"
+_GLOBAL_PGPOOL_STATUS="KO"
+
+/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status
+statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status | grep "is running with PID)
+if [ "$statusRun" != "" ]
+then
+  _GLOBAL_NODE_STATUS="OK"
+fi
+
 /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
+statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID)
+if [ "$statusRun" != "" ]
+then
+  _GLOBAL_PGPOOL_STATUS="OK"
+fi
 
 echo -en  "${YELLOW}Postgres Consul status${NC}\n"
 echo -en  "${NC}node0 : node_status${NC}\n"
@@ -197,6 +213,22 @@ echo -en  "${NC}pgpool0 : operation_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
 
 
+# GLOBAL
+if [ "$_GLOBAL_NODE_STATUS" == "OK" ]
+then
+  echo -en "sasdatasvrc-postgres-node0 : ${GREEN}OK${NC}\n"
+else
+   echo -en "sasdatasvrc-postgres-node0 : ${GREEN}KO${NC}\n"
+fi
+
+if [ "$_GLOBAL_PGPOOL_STATUS" == "OK" ]
+then
+  echo -en "sasdatasvrc-postgres-pgpool0 : ${GREEN}OK${NC}\n"
+else
+   echo -en "sasdatasvrc-postgres-pgpool0 : ${GREEN}KO${NC}\n"
+fi
+
+
 echo ""
 echo -en "${RED}************************${NC}\n"   
 echo -en "${RED}*** Other check${NC}\n"                                      
@@ -204,6 +236,7 @@ echo -en "${RED}************************${NC}\n"
 echo ""
 echo -en  "${YELLOW}Check disabled services${NC}\n"
 cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
+echo ""
 
 echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
 sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
