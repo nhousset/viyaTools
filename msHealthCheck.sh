@@ -48,9 +48,9 @@ echo -en  "${BLUE}hostnamectl${NC}\n"
 hostnamectl
 echo -en  "\n"
 
-echo -en  "${YELLOW}CPU Info'${NC} : "
+echo -en  "${YELLOW}CPU Info${NC} : "
 cat /proc/cpuinfo | grep processor |  wc -l
-echo "\n"
+echo ""
 
 echo -en  "${YELLOW}Memory${NC}\n"
 free -h
@@ -68,35 +68,47 @@ echo -en  "${RED}==================================================${NC}\n"
 echo -en  "${YELLOW}ps auxw | grep '/opt/sas/viya'${NC} : "
 ps auxw | grep '/opt/sas/viya'  | grep -v grep | wc -l
 echo -en "\n"
-echo -en  "${YELLOW}ps -u sas -f ${NC} : "
+echo -en  "${YELLOW}ps -u sas -f ${NC}\n"
 ps -u sas -f  | grep -v grep | wc -l
-echo -en " process running"
 
-echo -en  "${YELLOW}ps -u cas -f${NC} : "
+
+echo -en  "${YELLOW}ps -u cas -f${NC}\n"
 ps -u cas -f  | grep -v grep | wc -l
-echo -en " process running\n"
 
-echo -en  "${YELLOW}sasrabbitmq${NC} : "
+echo -en  "${YELLOW}sasrabbitmq${NC}\n"
 ps -u sasrabbitmq -f   | grep -v grep | wc -l
-echo -en " process running\n"
 
-echo -en  "${YELLOW}saspgpool${NC} : "
+echo -en  "${YELLOW}saspgpool${NC}\n"
 ps -u saspgpool -f   | grep -v grep | wc -l
-echo -en " process running\n"
 
-echo -en  "${YELLOW}Services sas-viya${NC}\n"
+echo -en  "${YELLOW}sas-viya services${NC}\n"
 systemctl list-units | grep sas-viya
 echo -en "\n"
 
 echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
-echo -en  "${YELLOW}Consul${NC}\n"
+
+echo "   _____ ____  _   _  _____ _    _ _      "
+echo "  / ____/ __ \| \ | |/ ____| |  | | |     "
+echo " | |   | |  | |  \| | (___ | |  | | |     "
+echo " | |   | |  | | . ` |\___ \| |  | | |     "
+echo " | |___| |__| | |\  |____) | |__| | |____ "
+echo "  \_____\____/|_| \_|_____/ \____/|______|"
+                                          
+                                          
+echo -en  "${YELLOW}netstat${NC}\n"                                         
 netstat -tupln | grep 8501
+
+echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
+ls -lrt /opt/sas/viya/config/var/lib/rabbitmsq-server/sasrabbitmq/.erlang.cookie 
+
+echo -en  "${YELLOW}status${NC}\n"     
 /opt/sas/viya/home/bin/sas-csq consul-status
+
+echo -en  "${YELLOW}Agents${NC}\n"     
 curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
-echo -en "\n"
-echo -en "\n"
+
 
 echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
 echo -en  "${YELLOW}saslogon${NC}\n"
