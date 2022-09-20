@@ -104,6 +104,7 @@ echo ""
 ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
 ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/private/sasdatasvrc/postgres/pgpool0/saskey.pem
 ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
+ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
@@ -174,12 +175,33 @@ curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "head
 echo -en  "${YELLOW}Vault ssl test ${NC}\n"
 openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
 
-
-echo -en  "${RED}SASDatasvrc${NC}\n"
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** SASDatasvrc${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+echo -en  "${YELLOW}SASDatasvrc status${YELLOW}\n"
 /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
 
+echo -en  "${YELLOW}Postgres Consul status${YELLOW}\n"
+echo -en  "${YELLOW}         node0 : node_status${YELLOW}\n"
+/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/node_status"
 
-echo -en  "${RED}Other check${NC}\n"
-echo -en  "${RED} Check disabled services${NC}\n"
+echo -en  "${YELLOW}         node0 : operation_status${YELLOW}\n"
+/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/operation_status"
+
+echo -en  "${YELLOW}         pgpool0 : node_status${YELLOW}\n"
+/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/node_status"
+
+echo -en  "${YELLOW}         pgpool0 : operation_status${YELLOW}\n"
+/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
+
+
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** Other check${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+echo -en  "${YELLOW}Check disabled services${NC}\n"
 cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
 
