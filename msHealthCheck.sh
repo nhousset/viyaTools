@@ -50,7 +50,7 @@ for arg in "$@" ; do
       while getopts ":onvq" short_arg $arg; do
         case "$short_arg" in
           o)
-            echo "arg :"$arg;;
+            echo "arg :"${OPTARG};;
           n)
             NONINTERACTIVE=1;;
           q)
