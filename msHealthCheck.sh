@@ -31,7 +31,7 @@ done
 echo "_GLOBAL_BATCH : "$_GLOBAL_BATCH
 echo "_GLOBAL_DEBUG : "$_GLOBAL_DEBUG
 
-if [ ${_GLOBAL_BATCH} == 1 ]
+if [ "${_GLOBAL_BATCH}" == "1" ]
 then
 	logfile=/tmp/SASmsHealthCheck_$$.log
 	exec > $logfile 2>&1
