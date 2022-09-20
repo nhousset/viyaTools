@@ -27,18 +27,7 @@ echo -en "${RED} / ' . \ ${NC}             \ \_/ /_| |_  | || | | |      | | | |
 echo -en "${RED} \/|_|\/ ${NC}              \___/ \___/  \_/\_| |_/      \_| |_/\____/\_| |_/\_____/\_/ \_| |_/       \____/\_| |_/\____/ \____/\_| \_/            ${RED} \/|_|\/ ${NC}\n"
 echo ""                                                                                                                                                       
                                                                                                                                                                                                                                                   
-                                                                                                                    
-echo ""
-echo " _____ _               _                    _                 "
-echo "/  __ \ |             | |                  | |                "
-echo "| /  \/ |__   ___  ___| | __  ___ _   _ ___| |_ ___ _ __ ___  "
-echo "| |   | '_ \ / _ \/ __| |/ / / __| | | / __| __/ _ \ '_ ' _ \ "
-echo "| \__/\ | | |  __/ (__|   <  \__ \ |_| \__ \ ||  __/ | | | | |"
-echo "\____/_| |_|\___|\___|_|\_\ |___/\__, |___/\__\___|_| |_| |_|"
-echo "                                   __/ |                      "
-echo "                                  |___/                       "
-echo ""                                  
-
+                             
 echo -en  "${RED}Check system ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
@@ -59,13 +48,18 @@ echo -en  "${BLUE}hostnamectl${NC}\n"
 hostnamectl
 echo -en  "\n"
 
-echo -en  "${YELLOW}CPU Info'${NC}\n"
+echo -en  "${YELLOW}CPU Info'${NC} : "
 cat /proc/cpuinfo | grep processor |  wc -l
-echo -en  "${YELLOW}Memory'${NC}\n"
-echo -en  "${YELLOW}Disk space'${NC}\n"
+echo "\n"
+
+echo -en  "${YELLOW}Memory${NC}\n"
+free -h
+
+echo -en  "${YELLOW}Disk space${NC}\n"
 df -h /opt/
 df -h /var/log
-echo -en  "${YELLOW}Users'${NC}\n"
+
+echo -en  "${YELLOW}User'${NC}\n"
 cat /etc/passwd | grep -E '^(cas|sas|viyassh|apache)';
 
 echo -en  "\n"
@@ -77,15 +71,19 @@ echo -en "\n"
 echo -en  "${YELLOW}ps -u sas -f ${NC} : "
 ps -u sas -f  | grep -v grep | wc -l
 echo -en " process running"
+
 echo -en  "${YELLOW}ps -u cas -f${NC} : "
 ps -u cas -f  | grep -v grep | wc -l
 echo -en " process running\n"
+
 echo -en  "${YELLOW}sasrabbitmq${NC} : "
 ps -u sasrabbitmq -f   | grep -v grep | wc -l
-echo -en " process running"
+echo -en " process running\n"
+
 echo -en  "${YELLOW}saspgpool${NC} : "
 ps -u saspgpool -f   | grep -v grep | wc -l
-echo -en " process running"
+echo -en " process running\n"
+
 echo -en  "${YELLOW}Services sas-viya${NC}\n"
 systemctl list-units | grep sas-viya
 echo -en "\n"
@@ -114,9 +112,8 @@ echo
 curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/sasstudioV
 echo
  
-echo -en  "${RED}rabbitMQ PID${NC}\n"
-rabbPid=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep pid)
-echo "$rabbPid" | tr -d '[{},pid'
+echo -en  "${RED}rabbitMQ ${NC}\n"
+/etc/init.d/sas-viya-rabbitmq-server-default status 
 
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
