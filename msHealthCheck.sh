@@ -186,14 +186,14 @@ _GLOBAL_NODE_STATUS="KO"
 _GLOBAL_PGPOOL_STATUS="KO"
 
 /etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status
-statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status | grep "is running with PID)
+statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status | grep "is running with PID")
 if [ "$statusRun" != "" ]
 then
   _GLOBAL_NODE_STATUS="OK"
 fi
 
 /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
-statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID)
+statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID")
 if [ "$statusRun" != "" ]
 then
   _GLOBAL_PGPOOL_STATUS="OK"
