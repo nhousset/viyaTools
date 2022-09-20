@@ -16,12 +16,32 @@ NC='\033[0m'
 echo -en  "\n"
 echo -en  "${RED}Check system ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
-echo -en  "${YELLOW}CPU Info'${NC}\"n
+
+echo -en  "${YELLOW}Hostname Info${NC}\n"
+echo -en  "${BLUE}hostname -s${NC} : "
+hostname -s
+echo -en  "\n"
+
+echo -en  "${BLUE}hostname -f${NC} : "
+hostname -f
+echo -en  "\n"
+
+echo -en  "${BLUE}hostname -A${NC} : "
+hostname -A
+echo -en  "\n"
+
+echo -en  "${BLUE}hostnamectl${NC} : "
+hostnamectl
+echo -en  "\n"
+
+echo -en  "${YELLOW}CPU Info'${NC}\n"
 cat /proc/cpuinfo | grep processor |  wc -l
-echo -en  "${YELLOW}Memory'${NC}\"n
-echo -en  "${YELLOW}Disk space'${NC}\"n
+echo -en  "${YELLOW}Memory'${NC}\n"
+echo -en  "${YELLOW}Disk space'${NC}\n"
 df -h /opt/
 df -h /var/log
+echo -en  "${YELLOW}Users'${NC}\n"
+cat /etc/passwd | grep -E '^(cas|sas|viyassh|apache)';
 
 echo -en  "\n"
 echo -en  "${RED}Check process ${NC}\n"
@@ -41,11 +61,14 @@ echo -en "\n"
 echo -en  "${YELLOW}saspgpool${NC} : "
 ps -u saspgpool -f   | grep -v grep | wc -l
 echo -en "\n"
+echo -en  "${YELLOW}Services sas-viya${NC} : "
+systemctl list-units | grep sas-viya
+echo -en "\n"
 
 exit
 
 
- systemctl list-units | grep sas-viya
+
  
  
 
