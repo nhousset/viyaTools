@@ -7,6 +7,11 @@
 # ***
 # *********************************************************
 
+
+source /opt/sas/viya/config/consul.conf
+export CONSUL_HTTP_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
+
+
 RED='\033[031m'
 GREEN='\033[032m'
 YELLOW='\033[033m'
@@ -30,7 +35,7 @@ echo -en  "${BLUE}hostname -A${NC} : "
 hostname -A
 echo -en  "\n"
 
-echo -en  "${BLUE}hostnamectl${NC} : "
+echo -en  "${BLUE}hostnamectl${NC}\n"
 hostnamectl
 echo -en  "\n"
 
@@ -51,20 +56,43 @@ ps auxw | grep '/opt/sas/viya'  | grep -v grep | wc -l
 echo -en "\n"
 echo -en  "${YELLOW}ps -u sas -f ${NC} : "
 ps -u sas -f  | grep -v grep | wc -l
-echo -en "\n"
+echo -en " process running"
 echo -en  "${YELLOW}ps -u cas -f${NC} : "
 ps -u cas -f  | grep -v grep | wc -l
-echo -en "\n"
+echo -en " process running\n"
 echo -en  "${YELLOW}sasrabbitmq${NC} : "
 ps -u sasrabbitmq -f   | grep -v grep | wc -l
-echo -en "\n"
+echo -en " process running"
 echo -en  "${YELLOW}saspgpool${NC} : "
 ps -u saspgpool -f   | grep -v grep | wc -l
-echo -en "\n"
-echo -en  "${YELLOW}Services sas-viya${NC} : "
+echo -en " process running"
+echo -en  "${YELLOW}Services sas-viya${NC}\n"
 systemctl list-units | grep sas-viya
 echo -en "\n"
 
+echo -en  "\n"
+echo -en  "${RED}Check Viya ${NC}\n"
+echo -en  "${RED}==================================================${NC}\n"
+echo -en  "${YELLOW}Consul${NC}\n"
+netstat -tupln | grep 8501
+/opt/sas/viya/home/bin/sas-csq consul-status
+curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
+echo -en "\n"
+echo -en "\n"
+
+echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
+echo -en  "${YELLOW}saslogon${NC}\n"
+echo
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/saslogon
+echo
+echo -en  "${YELLOW}compute${NC}\n"
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/compute
+echo
+echo -en  "${YELLOW}Compute/StudioV ${NC}\n"
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/modelstudio
+echo 
+curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://$vmPrivateIp:8501/v1/catalog/service/sasstudioV
+echo
 exit
 
 
@@ -72,12 +100,6 @@ exit
  
  
 
-
-
-echo -en  "${RED}Check Consul ${NC}\n"
-
-cmd="netstat -tupln | grep 8501"
-ansible all -m shell -a "$cmd" 2>/dev/null | grep -v CHANGED
 
 
 
