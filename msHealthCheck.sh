@@ -205,3 +205,15 @@ echo ""
 echo -en  "${YELLOW}Check disabled services${NC}\n"
 cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
 
+echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
+sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep -"rwsr-xr-x")
+echo $sasperm
+
+sasauth=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth | grep -"rwsr-xr-x")
+echo sasauth
+
+elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep -"rwsr-xr-x")
+echo $elssrv
+
+caslaunch=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch | grep -"rwsr-xr-x")
+echo $caslaunch
