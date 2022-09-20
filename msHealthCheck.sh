@@ -118,16 +118,27 @@ echo -en  "${RED}rabbitMQ ${NC}\n"
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
 
+echo "\ \    / /\  | |  | | | |__   __|"
+echo "  \ \  / /  \ | |  | | |    | |  "
+echo "   \ \/ / /\ \| |  | | |    | |  "
+echo "    \  / ____ \ |__| | |____| |  " 
+echo "     \/_/    \_\____/|______|_|  "
+                               
+echo -en  "${YELLOW}Vault version ${NC} : "
+opt/sas/viya/home/bin/vault version
+echo -en "\n"                              
 
-echo -en  "${RED} Check vault${NC}\n"
-/opt/sas/viya/home/bin/vault version
+echo -en  "${YELLOW}Vault status ${NC}\n"
 /opt/sas/viya/home/bin/vault status
+
+echo -en  "${YELLOW}Vault Server Configuration${NC}\n"
 
 cat /opt/sas/viya/config/etc/vault/default/vault.hcl
 
-
+echo -en  "${YELLOW}Vault test ${NC}\n"
 curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/vault.token)\"" 
 
+echo -en  "${YELLOW}Vault ssl test ${NC}\n"
 openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
 
 
