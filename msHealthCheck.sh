@@ -180,20 +180,20 @@ echo -en "${RED}************************${NC}\n"
 echo -en "${RED}*** SASDatasvrc${NC}\n"                                      
 echo -en "${RED}************************${NC}\n"   
 echo ""
-echo -en  "${YELLOW}SASDatasvrc status${YELLOW}\n"
+echo -en  "${YELLOW}SASDatasvrc status${NC}\n"
 /etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
 
-echo -en  "${YELLOW}Postgres Consul status${YELLOW}\n"
-echo -en  "${YELLOW}         node0 : node_status${YELLOW}\n"
+echo -en  "${YELLOW}Postgres Consul status${NC}\n"
+echo -en  "${NC}         node0 : node_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/node_status"
 
-echo -en  "${YELLOW}         node0 : operation_status${YELLOW}\n"
+echo -en  "${NC}         node0 : operation_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/operation_status"
 
-echo -en  "${YELLOW}         pgpool0 : node_status${YELLOW}\n"
+echo -en  "${NC}         pgpool0 : node_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/node_status"
 
-echo -en  "${YELLOW}         pgpool0 : operation_status${YELLOW}\n"
+echo -en  "${NC}         pgpool0 : operation_status${NC}\n"
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
 
 
