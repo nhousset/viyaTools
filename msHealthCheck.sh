@@ -20,6 +20,8 @@ NC='\033[0m'
 
 
 _GLOBAL_RABBITMQ_STATUS="KO"
+_GLOBAL_RABBITMQ_CONFIG="KO"
+
 _GLOBAL_VAULT_STATUS="KO"
 _GLOBAL_NODE_STATUS="KO"
 _GLOBAL_PGPOOL_STATUS="KO"
@@ -151,7 +153,19 @@ echo ""
 
 
 echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
-ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie 
+
+erlang=$(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie | grep "-r--------")
+if [ "$erlang" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${GREEN}OK${NC}\n"   
+  _GLOBAL_RABBITMQ_CONFIG="OK"
+else
+  echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${RED}KO${NC}\n"   
+  _GLOBAL_RABBITMQ_CONFIG="KO"
+fi
+
+
+
 
 echo -en  "${YELLOW}rabbitMQ status ${NC}\n"
 /etc/init.d/sas-viya-rabbitmq-server-default status 
@@ -297,11 +311,19 @@ else
 fi
 
 
+
+if [ "$_GLOBAL_RABBITMQ_CONFIG" == "OK" ]
+then
+  echo -en "RabbitMQ config : ${GREEN}OK${NC}\n"
+else
+   echo -en "RabbitMQ config : ${RED}KO${NC}\n"
+fi
+
 if [ "$_GLOBAL_RABBITMQ_STATUS" == "OK" ]
 then
-  echo -en "RabbitMQ : ${GREEN}OK${NC}\n"
+  echo -en "RabbitMQ process : ${GREEN}OK${NC}\n"
 else
-   echo -en "RabbitMQ : ${RED}KO${NC}\n"
+   echo -en "RabbitMQ process : ${RED}KO${NC}\n"
 fi
 
 
