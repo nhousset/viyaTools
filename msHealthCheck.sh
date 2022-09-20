@@ -27,7 +27,6 @@ for arg in "$@" ; do
       while getopts ":o:g:" option; do
     	case "${option}" in
         o)
-            outputFile=${OPTARG}
 	    outputMode=FILE
             ;;
         g)
@@ -38,10 +37,14 @@ for arg in "$@" ; do
   esac
 done
 
-echo "outputFile : "$outputFile
 echo "outputMode : "$outputMode
 echo "DEBUG : "$DEBUG
-exit
+
+if [ ${outputMode} == "FILE" ]
+then
+	logfile=/tmp/SASmsHealthCheck_$$.log
+	exec > $logfile 2>&1
+fi
 
 
 _GLOBAL_HTTPD_STATUS="KO"
@@ -57,7 +60,6 @@ _GLOBAL_NODE_STATUS="KO"
 _GLOBAL_PGPOOL_STATUS="KO"
 
 
-echo ""
 echo -en "${RED}    _    ${NC}              _   _ _______   _____         _   _  _____  ___   _    _____ _   _        _____  _   _  _____ _____  _   __            ${RED}    _    ${NC}\n"
 echo -en "${RED} /\| |/\ ${NC}             | | | |_   _\ \ / / _ \       | | | ||  ___|/ _ \ | |  |_   _| | | |      /  __ \| | | ||  ___/  __ \| | / /            ${RED} /\| |/\ ${NC}\n"
 echo -en "${RED} \ ' ' / ${NC}______ ______| | | | | |  \ V / /_\ \______| |_| || |__ / /_\ \| |    | | | |_| |______| /  \/| |_| || |__ | /  \/| |/ /______ ______${RED} \ ' ' / ${NC}\n"
@@ -71,7 +73,7 @@ echo -en  "${RED}Check system ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
 echo -en  "${YELLOW}Hostname Info${NC}\n"
-echo -en  "${BLUE}hostname -s${NC} : "
+echo -en  "${BLUE}hostname -s${NC} : " 
 hostname -s
 echo -en  "\n"
 
