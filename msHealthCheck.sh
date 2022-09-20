@@ -162,18 +162,34 @@ echo -en  "${YELLOW}Vault version ${NC} : "
 /opt/sas/viya/home/bin/vault version
 echo -en "\n"                              
 
+
 echo -en  "${YELLOW}Vault status ${NC}\n"
 /opt/sas/viya/home/bin/vault status
+statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID")
 
 echo -en  "${YELLOW}Vault Server Configuration${NC}\n"
 
 cat /opt/sas/viya/config/etc/vault/default/vault.hcl
 
 echo -en  "${YELLOW}Vault test ${NC}\n"
-curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/vault.token)\"" 
+VaultTestWebVaumt=$(curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/vault.token)\"" | grep warnings)
+
+if [ "$VaultTestWebVaumt" != "" ]
+then
+  _GLOBAL_VAULT_STATUS="OK"
+fi
 
 echo -en  "${YELLOW}Vault ssl test ${NC}\n"
 openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
+
+
+if [ "$_GLOBAL_VAULT_STATUS" == "OK" ]
+then
+  echo -en "Vault : ${GREEN}OK${NC}\n"
+else
+   echo -en "Vault : ${RED}KO${NC}\n"
+fi
+
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
@@ -218,14 +234,14 @@ if [ "$_GLOBAL_NODE_STATUS" == "OK" ]
 then
   echo -en "sasdatasvrc-postgres-node0 : ${GREEN}OK${NC}\n"
 else
-   echo -en "sasdatasvrc-postgres-node0 : ${GREEN}KO${NC}\n"
+   echo -en "sasdatasvrc-postgres-node0 : ${RED}KO${NC}\n"
 fi
 
 if [ "$_GLOBAL_PGPOOL_STATUS" == "OK" ]
 then
   echo -en "sasdatasvrc-postgres-pgpool0 : ${GREEN}OK${NC}\n"
 else
-   echo -en "sasdatasvrc-postgres-pgpool0 : ${GREEN}KO${NC}\n"
+   echo -en "sasdatasvrc-postgres-pgpool0 : ${RED}KO${NC}\n"
 fi
 
 
