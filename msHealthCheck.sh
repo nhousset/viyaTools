@@ -65,7 +65,7 @@ cat /etc/passwd | grep -E '^(cas|sas|viyassh|apache)';
 echo -en  "\n"
 echo -en  "${RED}Check process ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
-echo -en  "${YELLOW}ps auxw | grep '/opt/sas/viya'${NC} : "
+echo -en  "${YELLOW}ps auxw | grep '/opt/sas/viya'${NC}\n"
 ps auxw | grep '/opt/sas/viya'  | grep -v grep | wc -l
 echo -en "\n"
 echo -en  "${YELLOW}ps -u sas -f ${NC}\n"
@@ -81,7 +81,7 @@ ps -u sasrabbitmq -f   | grep -v grep | wc -l
 echo -en  "${YELLOW}saspgpool${NC}\n"
 ps -u saspgpool -f   | grep -v grep | wc -l
 
-echo -en  "${YELLOW}sas-viya services${NC}\n"
+echo -en  "${YELLOW}**** sas-viya services *** ${NC}\n"
 systemctl list-units | grep sas-viya
 echo -en "\n"
 
@@ -93,7 +93,7 @@ echo ""
 echo "   _____          _____ _____                      _ _          _____          _   _  __ _           _       ______                                           _    "
 echo "  / ____|  /\    / ____/ ____|                    (_) |        / ____|        | | (_)/ _(_)         | |     |  ____|                                         | |   "
 echo " | (___   /  \  | (___| (___   ___  ___ _   _ _ __ _| |_ _   _| |     ___ _ __| |_ _| |_ _  ___ __ _| |_ ___| |__ _ __ __ _ _ __ ___   _____      _____  _ __| | __"
-echo "  \___ \ / /\ \  \___ \\___ \ / _ \/ __| | | | '__| | __| | | | |    / _ \ '__| __| |  _| |/ __/ _` | __/ _ \  __| '__/ _` | '_ ` _ \ / _ \ \ /\ / / _ \| '__| |/ /"
+echo "  \___ \ / /\ \  \___ \\___ \ / _ \/ __| | | | '__| | __| | | | |    / _ \ '__| __| |  _| |/ __/ _' | __/ _ \  __| '__/ _' | '_ ' _ \ / _ \ \ /\ / / _ \| '__| |/ /"
 echo "  ____) / ____ \ ____) |___) |  __/ (__| |_| | |  | | |_| |_| | |___|  __/ |  | |_| | | | | (_| (_| | ||  __/ |  | | | (_| | | | | | |  __/\ V  V / (_) | |  |   < "
 echo " |_____/_/    \_\_____/_____/ \___|\___|\__,_|_|  |_|\__|\__, |\_____\___|_|   \__|_|_| |_|\___\__,_|\__\___|_|  |_|  \__,_|_| |_| |_|\___| \_/\_/ \___/|_|  |_|\_\"
 echo "                                                          __/ |                                                                                                    "
@@ -141,9 +141,9 @@ echo -en  "${RED}rabbitMQ ${NC}\n"
 
 echo -en  "${RED}Health Check rabbitMQ${NC}\n"
 /opt/sas/viya/home/sbin/rabbitmqctl node_health_check
-echo ""
 
-echo "\ \    / /\  | |  | | | |__   __|"
+echo ""
+echo " \ \    / /\  | |  | | | |__   __|"
 echo "  \ \  / /  \ | |  | | |    | |  "
 echo "   \ \/ / /\ \| |  | | |    | |  "
 echo "    \  / ____ \ |__| | |____| |  " 
