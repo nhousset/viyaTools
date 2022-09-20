@@ -24,22 +24,22 @@ for arg in "$@" ; do
     --debug)
       DEBUG=1;;   
     -[!-]*)
-      OPTIND=1
-      while getopts ":v:g:" option; do
-    case "${option}" in
-        v)
-            v=${OPTARG}
-            ((v == 15 || v == 75)) || usage
+      while getopts ":o:g:" option; do
+    	case "${option}" in
+        o)
+            outputFile=${OPTARG}
+	    outputMode=FILE
             ;;
         g)
             g=${OPTARG}
             ;;
-    esac
-done
+    	esac
+	done
   esac
 done
 
-echo "OPTIND : "$OPTIND
+echo "outputFile : "$outputFile
+echo "outputMode : "$outputMode
 echo "DEBUG : "$DEBUG
 exit
 
