@@ -88,6 +88,10 @@ echo -en  "${YELLOW}Disk space${NC}\n"
 df -h /opt/
 df -h /var/log
 
+echo -en  "${YELLOW}SELinux${NC}\n"
+/sbin/sestatus | grep "Current mode"
+
+
 echo -en  "${YELLOW}User'${NC}\n"
 cat /etc/passwd | grep -E '^(cas|sas|viyassh|apache)';
 
@@ -368,7 +372,7 @@ else
   echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
 fi
 
-echo -en  "${YELLOW}SASFoundation SPRE Sticky bit${NC}\n"
+echo -en  "${YELLOW}SASFoundation SPRE Sticky bit${NC} https://support.sas.com/kb/15/231.html \n"
 sasperm=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
 if [ "$sasperm" != "" ]
 then
