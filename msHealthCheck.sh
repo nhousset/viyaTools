@@ -368,6 +368,31 @@ else
   echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
 fi
 
+echo -en  "${YELLOW}SASFoundation SPRE Sticky bit${NC}\n"
+sasperm=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
+if [ "$sasperm" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm)" : " "${RED}KO${NC}\n"   
+fi
+
+
+sasauth=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
+if [ "$sasauth" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
+fi
+
+elssrv=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
+if [ "$elssrv" != "" ]
+then
+  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
+else
+  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
+fi
 
 
 echo ""
