@@ -117,6 +117,9 @@ ps -u saspgpool -f   | grep -v grep | wc -l
 echo -en  "${YELLOW}**** sas-viya services *** ${NC}\n"
 systemctl list-units | grep sas-viya
 echo -en "\n"
+echo -en  "${YELLOW}**** sas-viya services is enabled ?*** ${NC}\n"
+systemctl list-unit-files | grep enabled | grep sas
+echo -en "\n"
 
 
 echo -en  "${YELLOW}Apache${NC}\n"                                         
@@ -397,6 +400,7 @@ then
 else
   echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
 fi
+
 
 
 echo ""
