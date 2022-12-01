@@ -20,6 +20,7 @@ NC='\033[0m'
 
 _GLOBAL_PROFIL=ALL
 _GLOBAL_FULL=0
+_GLOBAL_CHECKUPDATE=0
 
 for arg in "$@" ; do
   case "$arg" in
@@ -34,9 +35,23 @@ for arg in "$@" ; do
       --ms)
       _GLOBAL_PROFIL=MS;; 
       --full)
-      _GLOBAL_FULL=1;; 
+      _GLOBAL_FULL=1;;
+      --checkupdate)
+      _GLOBAL_CHECKUPDATE=1;;
+      
   esac
 done
+
+if [ "${_GLOBAL_CHECKUPDATE}" == "1" ]
+then
+
+	ls -lrt /etc/yum.repos.d/sas*
+	yum check-update "sas-*"
+	rpm -qg SAS | tee -a /tmp/viya_rpms.txt
+	yum grouplist "SAS*" | tee -a /tmp/viya_yumgroups.txt
+	exit 0
+fi
+
 
 if [ "${_GLOBAL_PROFIL}" == "ALL" ]
 then
