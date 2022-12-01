@@ -144,7 +144,7 @@ systemctl list-unit-files | grep enabled | grep sas
 echo -en "\n"
 
 
-if [ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS" ||  ]
+if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
 	echo -en  "${YELLOW}Apache${NC}\n"                                         
 	netstat -tupln | grep :80
@@ -177,7 +177,7 @@ echo -en  "${YELLOW}sas-ops env${NC}\n"
 echo -en  "${YELLOW}sas-ops info${NC}\n"
 /opt/sas/viya/home/bin/sas-ops info
 
-if [ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS" ||  ]
+if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
 	echo ""
 	echo -en "${RED}******************************************${NC}\n"   
@@ -210,7 +210,7 @@ fi
 echo -en  "${YELLOW}Agents${NC}\n"     
 curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
 
-if [ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS" ||  ]
+if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
 	echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
 	echo -en  "${YELLOW}saslogon${NC}\n"
@@ -358,7 +358,7 @@ echo -en  "${YELLOW}sas-ops validate${NC}\n"
 echo -en  "${YELLOW}sas-ops validate${NC}\n"
 /opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
 
-if [ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS" ||  ]
+if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
 	echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
 	sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
