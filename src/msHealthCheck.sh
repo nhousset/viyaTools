@@ -18,20 +18,42 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
+_GLOBAL_PROFIL=ALL
 
 for arg in "$@" ; do
   case "$arg" in
     --debug)
       _GLOBAL_DEBUG=1;; 
     --batch)
-      _GLOBAL_BATCH=1;;  
+      _GLOBAL_BATCH=1;;
+     --casctrl)
+      _GLOBAL_PROFIL=CASCTRL; 
+      --caswrk)
+      _GLOBAL_PROFIL=CASWRK; 
+      --ms)
+      _GLOBAL_PROFIL=MS; 
+      
   esac
 done
 
+if [ "_GLOBAL_PROFIL" == "ALL" ]
+then
+	_TITRE="Service Health Check VIYA 3.5"
+fi
+if [ "_GLOBAL_PROFIL" == "MS" ]
+then
+	_TITRE="MicroService Health Check VIYA 3.5"
+fi
+if [ "_GLOBAL_PROFIL" == "CASWRK" ]
+then
+	_TITRE="CAS Worker Check VIYA 3.5"
+fi
+
 echo -en "${BLUE}==================================================${NC}\n"
-echo -en "${BLUE}Micro Service Health Check VIYA 3.5 ${NC}\n"
+echo -en "${BLUE} ${_TITRE} ${NC}\n"
 echo -en "${BLUE}==================================================${NC}\n"
 echo ""                                                                                                                                                       
+
            
 _GLOBAL_LOG_FILE=/tmp/SASmsHealthCheck_$$.log
 
@@ -122,24 +144,27 @@ systemctl list-unit-files | grep enabled | grep sas
 echo -en "\n"
 
 
-echo -en  "${YELLOW}Apache${NC}\n"                                         
-netstat -tupln | grep :80
-netstat -tupln | grep :443
-
-
-if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost) == 200 ]]
+if [ "_GLOBAL_PROFIL" == "ALL" || "_GLOBAL_PROFIL" == "MS" ||  ]
 then
-	_GLOBAL_HTTPD_STATUS="OK"
-else
-    if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost) == 401 ]]
-    then
-	  	_GLOBAL_HTTPD_STATUS="OK"
-    else
-       if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost ) == 403 ]]
-    then
-	  	_GLOBAL_HTTPD_STATUS="OK"
-    fi
-    fi
+	echo -en  "${YELLOW}Apache${NC}\n"                                         
+	netstat -tupln | grep :80
+	netstat -tupln | grep :443
+
+
+	if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost) == 200 ]]
+	then
+		_GLOBAL_HTTPD_STATUS="OK"
+	else
+    		if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost) == 401 ]]
+    		then
+		  	_GLOBAL_HTTPD_STATUS="OK"
+    		else
+       			if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" http://localhost ) == 403 ]]
+    			then
+			  	_GLOBAL_HTTPD_STATUS="OK"
+		    	fi
+    		fi
+	fi
 fi
 
 echo -en  "\n"
@@ -152,15 +177,18 @@ echo -en  "${YELLOW}sas-ops env${NC}\n"
 echo -en  "${YELLOW}sas-ops info${NC}\n"
 /opt/sas/viya/home/bin/sas-ops info
 
-echo ""
-echo -en "${RED}******************************************${NC}\n"   
-echo -en "${RED}*** SASSecurityCertificateFramework ${NC}\n"                                      
-echo -en "${RED}******************************************${NC}\n"   
-echo ""
-ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
-ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/private/sasdatasvrc/postgres/pgpool0/saskey.pem
-ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
-ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
+if [ "_GLOBAL_PROFIL" == "ALL" || "_GLOBAL_PROFIL" == "MS" ||  ]
+then
+	echo ""
+	echo -en "${RED}******************************************${NC}\n"   
+	echo -en "${RED}*** SASSecurityCertificateFramework ${NC}\n"                                      
+	echo -en "${RED}******************************************${NC}\n"   
+	echo ""
+	ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
+	ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/private/sasdatasvrc/postgres/pgpool0/saskey.pem
+	ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
+	ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
+fi
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
@@ -182,148 +210,138 @@ fi
 echo -en  "${YELLOW}Agents${NC}\n"     
 curl -vk --header "X-Consul-Token:$CONSUL_HTTP_TOKEN"  https://localhost:8501/v1/agent/members
 
-
-echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
-echo -en  "${YELLOW}saslogon${NC}\n"
-echo
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/saslogon
-echo
-echo -en  "${YELLOW}compute${NC}\n"
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/compute
-echo
-echo -en  "${YELLOW}Compute/StudioV ${NC}\n"
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/modelstudio
-echo 
-curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/sasstudioV
-echo
+if [ "_GLOBAL_PROFIL" == "ALL" || "_GLOBAL_PROFIL" == "MS" ||  ]
+then
+	echo -en  "${RED} Check SASlogon,Compute/StudioV and ModelStudio in Consul ${NC}\n"
+	echo -en  "${YELLOW}saslogon${NC}\n"
+	echo
+	curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/saslogon
+	echo
+	echo -en  "${YELLOW}compute${NC}\n"
+	curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/compute
+	echo
+	echo -en  "${YELLOW}Compute/StudioV ${NC}\n"
+	curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/modelstudio
+	echo 
+	curl -k --header "X-Consul-Token:$CONSUL_HTTP_TOKEN" --request GET -n https://localhost:8501/v1/catalog/service/sasstudioV
+	echo
  
-echo ""
-echo -en "${RED}************************${NC}\n"   
-echo -en "${RED}*** RabbitMQ${NC}\n"                                      
-echo -en "${RED}************************${NC}\n"   
-echo ""
+	echo ""
+	echo -en "${RED}************************${NC}\n"   
+	echo -en "${RED}*** RabbitMQ${NC}\n"                                      
+	echo -en "${RED}************************${NC}\n"   
+	echo ""
 
 
-echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
+	echo -en  "${YELLOW}.erlang.cookie ${NC}\n"   
 
-erlang=$(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie | grep "r--------")
-if [ "$erlang" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${GREEN}OK${NC}\n"   
-  _GLOBAL_RABBITMQ_CONFIG="OK"
-else
-  echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${RED}KO${NC}\n"   
-  _GLOBAL_RABBITMQ_CONFIG="KO"
+	erlang=$(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie | grep "r--------")
+	if [ "$erlang" != "" ]
+	then
+  	echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${GREEN}OK${NC}\n"   
+  	_GLOBAL_RABBITMQ_CONFIG="OK"
+	else
+  	echo -en $(ls -lrt /opt/sas/viya/config/var/lib/rabbitmq-server/sasrabbitmq/.erlang.cookie)" : " "${RED}KO${NC}\n"   
+  	_GLOBAL_RABBITMQ_CONFIG="KO"
+	fi
+
+	echo -en  "${YELLOW}rabbitMQ status ${NC}\n"
+	/etc/init.d/sas-viya-rabbitmq-server-default status 
+
+	statusRun=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep "service is running")
+	if [ "$statusRun" != "" ]
+	then
+  	_GLOBAL_RABBITMQ_STATUS="OK"
+	fi
+
+	echo -en  "${YELLOW}rabbitMQ Health Check ${NC}\n"
+	/opt/sas/viya/home/sbin/rabbitmqctl node_health_check
+
+	echo ""
+	echo -en "${RED}************************${NC}\n"   
+	echo -en "${RED}*** VAULT${NC}\n"                                      
+	echo -en "${RED}************************${NC}\n"   
+	echo ""
+
+	echo -en  "${YELLOW}Vault version ${NC} : "
+	/opt/sas/viya/home/bin/vault version
+	echo -en "\n"                              
+
+	echo -en  "${YELLOW}Vault status ${NC}\n"
+	/opt/sas/viya/home/bin/vault status
+	statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID")
+
+	echo -en  "${YELLOW}Vault Server Configuration${NC}\n"
+
+	cat /opt/sas/viya/config/etc/vault/default/vault.hcl
+
+	echo -en  "${YELLOW}Vault test ${NC}\n"
+	VaultTestWebVaumt=$(curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/vault.token)\"" | grep warnings)
+
+	if [ "$VaultTestWebVaumt" != "" ]
+	then
+  	_GLOBAL_VAULT_STATUS="OK"
+	fi
+
+	echo -en  "${YELLOW}Vault ssl test ${NC}\n"
+	openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
+
+	echo ""
+	echo -en "${RED}************************${NC}\n"   
+	echo -en "${RED}*** SASDatasvrc${NC}\n"                                      
+	echo -en "${RED}************************${NC}\n"   
+	echo ""
+	echo -en  "${YELLOW}SASDatasvrc status${NC}\n"
+
+	/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status
+	statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status | grep "is running with PID")
+	if [ "$statusRun" != "" ]
+	then
+	  _GLOBAL_NODE_STATUS="OK"
+	fi
+
+	/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
+	statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID")
+	if [ "$statusRun" != "" ]
+	then
+  	_GLOBAL_PGPOOL_STATUS="OK"
+	fi
+
+	echo -en  "${YELLOW}Postgres Consul status${NC}\n"
+	echo -en  "${NC}node0 : node_status${NC}\n"
+	/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/node_status"
+
+	echo -en  "${NC}node0 : operation_status${NC}\n"
+	/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/operation_status"
+
+	echo -en  "${NC}pgpool0 : node_status${NC}\n"
+	/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/node_status"
+
+	echo -en  "${NC}pgpool0 : operation_status${NC}\n"
+	/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
+
+	echo -en  "${YELLOW}Audit${NC}\n"
+	ls -la /opt/sas/viya/config/var/cache/auditcli
+
+	echo -en  "${YELLOW}Web App${NC}\n"
+	echo -en  "${NC}SASDrive : "
+	if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/) == 200 ]]
+	then
+		SASDrive="OK"
+	else
+    	if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/) == 401 ]]
+    	then
+		  	SASDrive="OK"
+    	else
+       		if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/ ) == 403 ]]
+    		then
+	  		SASDrive="OK"
+    		fi
+    	fi
+	fi
+	echo -en  $SASDrive"\n"
+
 fi
-
-
-
-
-echo -en  "${YELLOW}rabbitMQ status ${NC}\n"
-/etc/init.d/sas-viya-rabbitmq-server-default status 
-
-statusRun=$(/etc/init.d/sas-viya-rabbitmq-server-default status | grep "service is running")
-if [ "$statusRun" != "" ]
-then
-  _GLOBAL_RABBITMQ_STATUS="OK"
-fi
-
-echo -en  "${YELLOW}rabbitMQ Health Check ${NC}\n"
-/opt/sas/viya/home/sbin/rabbitmqctl node_health_check
-
-echo ""
-echo -en "${RED}************************${NC}\n"   
-echo -en "${RED}*** VAULT${NC}\n"                                      
-echo -en "${RED}************************${NC}\n"   
-echo ""
-
-echo -en  "${YELLOW}Vault version ${NC} : "
-/opt/sas/viya/home/bin/vault version
-echo -en "\n"                              
-
-
-echo -en  "${YELLOW}Vault status ${NC}\n"
-/opt/sas/viya/home/bin/vault status
-statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID")
-
-echo -en  "${YELLOW}Vault Server Configuration${NC}\n"
-
-cat /opt/sas/viya/config/etc/vault/default/vault.hcl
-
-echo -en  "${YELLOW}Vault test ${NC}\n"
-VaultTestWebVaumt=$(curl -k -K- https://localhost:8200/v1/viya_inter/roles/test_web_server <<< "header=\"X-Vault-Token: $(sudo cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/vault.token)\"" | grep warnings)
-
-if [ "$VaultTestWebVaumt" != "" ]
-then
-  _GLOBAL_VAULT_STATUS="OK"
-fi
-
-echo -en  "${YELLOW}Vault ssl test ${NC}\n"
-openssl s_client -connect localhost:8200 -prexit -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -showcerts
-
-
-
-
-
-echo ""
-echo -en "${RED}************************${NC}\n"   
-echo -en "${RED}*** SASDatasvrc${NC}\n"                                      
-echo -en "${RED}************************${NC}\n"   
-echo ""
-echo -en  "${YELLOW}SASDatasvrc status${NC}\n"
-
-
-
-/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status
-statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-node0 status | grep "is running with PID")
-if [ "$statusRun" != "" ]
-then
-  _GLOBAL_NODE_STATUS="OK"
-fi
-
-/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status
-statusRun=$(/etc/init.d/sas-viya-sasdatasvrc-postgres-pgpool0 status | grep "is running with PID")
-if [ "$statusRun" != "" ]
-then
-  _GLOBAL_PGPOOL_STATUS="OK"
-fi
-
-echo -en  "${YELLOW}Postgres Consul status${NC}\n"
-echo -en  "${NC}node0 : node_status${NC}\n"
-/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/node_status"
-
-echo -en  "${NC}node0 : operation_status${NC}\n"
-/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/node0/operation_status"
-
-echo -en  "${NC}pgpool0 : node_status${NC}\n"
-/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/node_status"
-
-echo -en  "${NC}pgpool0 : operation_status${NC}\n"
-/opt/sas/viya/home/bin/sas-bootstrap-config kv read "config/postgres/admin/pgpool0/operation_status"
-
-
-echo -en  "${YELLOW}Audit${NC}\n"
-ls -la /opt/sas/viya/config/var/cache/auditcli
-
-
-echo -en  "${YELLOW}Web App${NC}\n"
-echo -en  "${NC}SASDrive : "
-if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/) == 200 ]]
-then
-	SASDrive="OK"
-else
-    if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/) == 401 ]]
-    then
-	  	SASDrive="OK"
-    else
-       if [[ $(curl --insecure  --location -s -o /dev/null -w  "%{http_code}" https://localhost/SASDrive/ ) == 403 ]]
-    then
-	  	SASDrive="OK"
-    fi
-    fi
-fi
-echo -en  $SASDrive"\n"
-
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
@@ -340,66 +358,68 @@ echo -en  "${YELLOW}sas-ops validate${NC}\n"
 echo -en  "${YELLOW}sas-ops validate${NC}\n"
 /opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
 
-
-echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
-sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
-if [ "$sasperm" != "" ]
+if [ "_GLOBAL_PROFIL" == "ALL" || "_GLOBAL_PROFIL" == "MS" ||  ]
 then
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm)" : " "${RED}KO${NC}\n"   
+	echo -en  "${YELLOW}SASFoundation Sticky bit${NC}\n"
+	sasperm=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
+	if [ "$sasperm" != "" ]
+	then
+  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm)" : " "${GREEN}OK${NC}\n"   
+	else
+  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasperm)" : " "${RED}KO${NC}\n"   
+	fi
+
+
+	sasauth=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
+	if [ "$sasauth" != "" ]
+	then
+  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${GREEN}OK${NC}\n"   
+	else
+  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
+	fi
+	
+	elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
+	if [ "$elssrv" != "" ]
+	then	
+	  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
+	else
+	  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
+	fi
 fi
 
+	caslaunch=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch | grep "rwsr-xr-x")
+	if [ "$caslaunch" != "" ]
+	then
+  		echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${GREEN}OK${NC}\n"   
+	else
+  	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
+	fi
 
-sasauth=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
-if [ "$sasauth" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
-fi
-
-elssrv=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
-if [ "$elssrv" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
-fi
-
-caslaunch=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch | grep "rwsr-xr-x")
-if [ "$caslaunch" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
-fi
-
-echo -en  "${YELLOW}SASFoundation SPRE Sticky bit${NC} https://support.sas.com/kb/15/231.html \n"
-sasperm=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
-if [ "$sasperm" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm)" : " "${RED}KO${NC}\n"   
-fi
+	echo -en  "${YELLOW}SASFoundation SPRE Sticky bit${NC} https://support.sas.com/kb/15/231.html \n"
+	sasperm=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
+	if [ "$sasperm" != "" ]
+	then	
+  		echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm)" : " "${GREEN}OK${NC}\n"   
+	else
+  		echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm)" : " "${RED}KO${NC}\n"   
+	fi
 
 
-sasauth=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
-if [ "$sasauth" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
-fi
+	sasauth=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth | grep "rwsr-xr-x")
+	if [ "$sasauth" != "" ]
+	then
+  		echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth)" : " "${GREEN}OK${NC}\n"   
+	else
+  		echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasauth)" : " "${RED}KO${NC}\n"   
+	fi
 
-elssrv=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
-if [ "$elssrv" != "" ]
-then
-  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
-else
-  echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
-fi
+	elssrv=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv | grep "rwsr-xr-x")
+	if [ "$elssrv" != "" ]
+	then
+  		echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${GREEN}OK${NC}\n"   
+	else
+  		echo -en $(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/elssrv)" : " "${RED}KO${NC}\n"   
+	fi
 
 
 
