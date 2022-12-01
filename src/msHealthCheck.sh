@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 # *********************************************************
-# *** Micro Service Health Check VIYA 3.5
+# *** Health Check VIYA 3.5
 # *** (c) Nicolas Housset
 # *** https://www.nicolas-housset.fr
 # ***
@@ -44,10 +44,20 @@ done
 
 if [ "${_GLOBAL_CHECKUPDATE}" == "1" ]
 then
-
+	echo -en "${BLUE}==================================================${NC}\n"
+	echo -en "${BLUE} Check before update ${NC}\n"
+	echo -en "${BLUE}==================================================${NC}\n"
+	echo ""    
+	echo -en  "${YELLOW}SAS repo${NC}\n"
 	ls -lrt /etc/yum.repos.d/sas*
-	yum check-update "sas-*"
+	echo ""
+	echo -en  "${YELLOW}check update${NC}\n"
+	yum check-update "sas-*" | grep yum
+	echo ""
+	echo -en  "${YELLOW}rpm list to /tmp/viya_rpms.txt${NC}\n"
 	rpm -qg SAS | tee -a /tmp/viya_rpms.txt
+	echo ""
+	echo -en  "${YELLOW}rpm group to /tmp/viya_yumgroups.txt${NC}\n"
 	yum grouplist "SAS*" | tee -a /tmp/viya_yumgroups.txt
 	exit 0
 fi
