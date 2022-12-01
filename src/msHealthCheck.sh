@@ -19,6 +19,7 @@ BLUE='\033[034m'
 NC='\033[0m' 
 
 _GLOBAL_PROFIL=ALL
+_GLOBAL_FULL=0
 
 for arg in "$@" ; do
   case "$arg" in
@@ -32,7 +33,8 @@ for arg in "$@" ; do
       _GLOBAL_PROFIL=CASWRK;; 
       --ms)
       _GLOBAL_PROFIL=MS;; 
-      
+      --full)
+      _GLOBAL_FULL=1;; 
   esac
 done
 
@@ -43,6 +45,10 @@ fi
 if [ "${_GLOBAL_PROFIL}" == "MS" ]
 then
 	_TITRE="MicroService Health Check VIYA 3.5"
+fi
+if [ "${_GLOBAL_PROFIL}" == "CASCTRL" ]
+then
+	_TITRE="CAS Controller Check VIYA 3.5"
 fi
 if [ "${_GLOBAL_PROFIL}" == "CASWRK" ]
 then
@@ -113,9 +119,11 @@ df -h /var/log
 echo -en  "${YELLOW}SELinux${NC}\n"
 /sbin/sestatus | grep "Current mode"
 
-
-echo -en  "${YELLOW}User'${NC}\n"
-cat /etc/passwd | grep -E '^(cas|sas|viyassh|apache)';
+if [ "${_GLOBAL_FULL}" == "1" ]
+then
+	echo -en  "${YELLOW}User'${NC}\n"
+	cat /etc/passwd | grep -E '^(cas|sas|viyassh|apache)';
+fi
 
 echo -en  "\n"
 echo -en  "${RED}Check process ${NC}\n"
@@ -171,11 +179,14 @@ echo -en  "\n"
 echo -en  "${RED}Check Viya ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
-echo -en  "${YELLOW}sas-ops env${NC}\n"
-/opt/sas/viya/home/bin/sas-ops env
+if [ "${_GLOBAL_FULL}" == "1" ]
+then
+	echo -en  "${YELLOW}sas-ops env${NC}\n"
+	/opt/sas/viya/home/bin/sas-ops env
 
-echo -en  "${YELLOW}sas-ops info${NC}\n"
-/opt/sas/viya/home/bin/sas-ops info
+	echo -en  "${YELLOW}sas-ops info${NC}\n"
+	/opt/sas/viya/home/bin/sas-ops info
+fi
 
 if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
@@ -348,15 +359,18 @@ echo -en "${RED}************************${NC}\n"
 echo -en "${RED}*** Other check${NC}\n"                                      
 echo -en "${RED}************************${NC}\n"   
 echo ""
-echo -en  "${YELLOW}Check disabled services${NC}\n"
-cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
-echo ""
+if [ "${_GLOBAL_FULL}" == "1" ]
+then
+	echo -en  "${YELLOW}Check disabled services${NC}\n"
+	cat /opt/sas/viya/config/etc/viya-svc-mgr/svc-ignore | grep -v '#'
+	echo ""
 
-echo -en  "${YELLOW}sas-ops validate${NC}\n"
-/opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
+	echo -en  "${YELLOW}sas-ops validate${NC}\n"
+	/opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
 
-echo -en  "${YELLOW}sas-ops validate${NC}\n"
-/opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
+	echo -en  "${YELLOW}sas-ops validate${NC}\n"
+	/opt/sas/viya/home/bin/sas-ops validate --level 3 --verbose
+fi
 
 if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
@@ -387,6 +401,8 @@ then
 	fi
 fi
 
+if [ "${_GLOBAL_PROFIL}" == "CASCTRL" ]
+then
 	caslaunch=$(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch | grep "rwsr-xr-x")
 	if [ "$caslaunch" != "" ]
 	then
@@ -394,7 +410,7 @@ fi
 	else
   	echo -en $(ls -lrt /opt/sas/viya/home/SASFoundation/utilities/bin/caslaunch)" : " "${RED}KO${NC}\n"   
 	fi
-
+fi
 	echo -en  "${YELLOW}SASFoundation SPRE Sticky bit${NC} https://support.sas.com/kb/15/231.html \n"
 	sasperm=$(ls -lrt /opt/sas/spre/home/SASFoundation/utilities/bin/sasperm | grep "rwsr-xr-x")
 	if [ "$sasperm" != "" ]
