@@ -9,6 +9,12 @@
 ## Overview 
 This tool launches a complete audit of a SAS VIYA 3.5 platform. 
 
+
+## prerequisites
+
+- The script must be installed on the server you want to test (microservice server, Cas controller)
+- You must have root or sudo rights to run this script
+
 ## How to
 
 After cloning the repository, the health check is done simply by running msHealthCheck.sh  shell in the scripts directory
@@ -17,6 +23,17 @@ After cloning the repository, the health check is done simply by running msHealt
 msHealthCheck.sh
 ```
 
+### update viya mode
+
+The --checkupdate  option allows to list the packages present in the repository but not installed on the viya environment
+
+```
+msHealthCheck.sh --checkupdate
+```
+
+
+## batch mode
+
 You can use the --batch option to redirect the audit results to a file.
 
 ```
@@ -24,3 +41,10 @@ msHealthCheck.sh --batch
 ```
 
 The output file is written to /tmp/ as SASmsHealthCheck_PID.log
+
+### debug mode
+
+```
+msHealthCheck.sh --debug
+```
+
