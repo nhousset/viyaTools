@@ -23,6 +23,33 @@ After cloning the repository, the health check is done simply by running msHealt
 msHealthCheck.sh
 ```
 
+### Options
+
+--full perform a complete check
+
+```
+msHealthCheck.sh --full
+```
+
+--ms controls the microservice server
+
+```
+msHealthCheck.sh --ms
+```
+
+--casctrl controls the CAS controller server
+
+```
+msHealthCheck.sh --casctrl
+```
+
+--caswrk controls a CAS Worker server
+```
+msHealthCheck.sh --caswrk
+```
+
+
+
 ### update viya mode
 
 The --checkupdate  option allows to list the packages present in the repository but not installed on the viya environment
