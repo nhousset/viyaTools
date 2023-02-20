@@ -73,11 +73,11 @@ for filename in $JSONPATH/*.json; do
     
     # Execute sas-admin command to upload the report package
     # Output is redirected to the out file
-    $clidir/sas-admin --profile DevOps transfer upload --file $filename --mapping mappingFile > $out
+    $clidir/sas-admin transfer upload --file $filename --mapping mappingFile > $out
     
     # Read the id of the uploaded package from the out file
     id="$(grep '"id":' $out | awk '{gsub(/"|,/, "", $2);print $2}')"
     
     # Import the uploaded package
-    $clidir/sas-admin --profile DevOps transfer import --id $id --name mappingFile
+    $clidir/sas-admin transfer import --id $id --name mappingFile
 done
