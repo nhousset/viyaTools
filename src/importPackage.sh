@@ -13,11 +13,19 @@
 clidir=/opt/sas/viya/home/bin
 tmpdir=/tmp
 
+RED='\033[031m'
+GREEN='\033[032m'
+YELLOW='\033[033m'
+BLUE='\033[034m'
+NC='\033[0m' 
+
+
 
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>"
+   echo -e "${RED}Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>${NC}\n"
+   echo "       $0 -u adminuser -p password -h http://viya35.ms -d /tmp/import/"
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
    echo -e "\t-h Sets the URL to the SAS services. [\$SAS_SERVICES_ENDPOINT]"
@@ -55,14 +63,9 @@ fi
 
 exit
 
-RED='\033[031m'
-GREEN='\033[032m'
-YELLOW='\033[033m'
-BLUE='\033[034m'
-NC='\033[0m' 
 
 # Set endpoint for default profile
-$clidir/sas-admin --colors-enabled profile set-endpoint http://$HOSTNAME
+$clidir/sas-admin --colors-enabled profile set-endpoint $HOSTNAME
 $clidir/sas-admin --colors-enabled set-output text
 
 # Refresh authentication token
