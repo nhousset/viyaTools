@@ -54,6 +54,12 @@ fi
 
 # Begin script in case all parameters are correct
 
+# check if json dir exists
+if [ !  -d "$_JSONPATH" ]; then
+   echo -e "${RED}${_JSONPATH} does not exist.${NC}"
+   exit 1
+fi
+
 # Set endpoint for default profile
 $clidir/sas-admin --colors-enabled profile set-endpoint $_HOSTNAME
 $clidir/sas-admin --colors-enabled profile set-output fulljson
