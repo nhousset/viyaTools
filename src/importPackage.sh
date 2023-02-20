@@ -24,7 +24,7 @@ NC='\033[0m'
 helpFunction()
 {
    echo ""
-   echo -e "${RED}Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>${NC}\n"
+   echo -e "${RED}Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>${NC}"
    echo "       $0 -u adminuser -p password -h http://viya35.ms -d /tmp/import/"
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
