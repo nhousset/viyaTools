@@ -7,7 +7,7 @@ tmpdir=/tmp
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -u viya user -p viya password -h viya ms hostname -d json directory"
+   echo "Usage: $0 -u <viya user> -p <viya password> -h <viya ms hostname> -d <json directory>"
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
    echo -e "\t-h Description of what is parameterC"
