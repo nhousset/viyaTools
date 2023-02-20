@@ -93,7 +93,7 @@ for filename in $_JSONPATH/*.json; do
       nbImportOk=nbImportOk+1
       # Import the uploaded package
       
-      url="http://$_HOSTNAME/transfer/packages/$packageId"
+      url="$_HOSTNAME/transfer/packages/$packageId"
    
       echo -e "${YELLOW}Package url : ${NC}"$url
       echo -e "${YELLOW}Package Id : ${NC}"$packageId
