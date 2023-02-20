@@ -73,7 +73,7 @@ then
 fi
 
 echo ""
-echo "${YELLOW}Import json files from ${_JSONPATH}${NC}"
+echo -e "${YELLOW}Import json files from ${_JSONPATH}${NC}"
  
 # Code to be executed for all .json files in the JSONPATH directory
 typeset -i nbImport=0
@@ -83,7 +83,7 @@ for filename in $_JSONPATH/*.json; do
    # Extract report name from the filename variable
    name=$(basename -- "$filename")
    
-   echo "${YELLOW}Processing : ${NC}"${name}
+   echo -e "${YELLOW}Processing : ${NC}"${name}
    
    # Execute sas-admin command to upload the report package  
    
@@ -95,8 +95,8 @@ for filename in $_JSONPATH/*.json; do
       
       url="http://$_HOSTNAME/transfer/packages/$packageId"
    
-      echo "${YELLOW}Package url : ${NC}"$url
-      echo "${YELLOW}Package Id : ${NC}"$packageId
+      echo -e "${YELLOW}Package url : ${NC}"$url
+      echo -e "${YELLOW}Package Id : ${NC}"$packageId
       
       /opt/sas/viya/home/bin/sas-admin transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
       echo ""
