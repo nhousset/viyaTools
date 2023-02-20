@@ -25,10 +25,19 @@ After cloning the repository, the health check is done simply by running ./impor
 importPackage.sh
 ```
 
+## Usage
+
+```
+./importPackage.sh -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>
+```
+  
 ### Options
 
--u userID 
+-u userID
+
 -p password
+
 -h Sets the URL to the SAS services. [$SAS_SERVICES_ENDPOINT]
+
 -d Sets the directory containing the json file(s) to import
 
