@@ -80,36 +80,22 @@ for filename in $_JSONPATH/*.json; do
    name=$(basename -- "$filename")
    
    echo "Processing : ${name}"
-   /opt/sas/viya/home/bin/sas-admin transfer upload --file $filename
+   
+   # Execute sas-admin command to upload the report package  
+   
+   packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $filename | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
    echo $?
    if [ $? == 0 ]
    then
-
-      packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $project_name.json | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
+   
+      # Import the uploaded package
+      
       url="http://$_HOSTNAME/transfer/packages/$packageId"
    
-      echo "url :"$url
-      echo "packageId :"$packageId
-
+      echo "Package url :"$url
+      echo "Package Id :"$packageId
+      
       #time /opt/sas/viya/home/bin/sas-admin --verbose transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
     fi
-    
-    # Extract report name from the filename variable
-    #name=$(basename -- "$filename")
-    
-    # Create variable for the different filenames
-    
-    #out=$tmpdir/package_"${name%.*}".txt
-    
-    #mappingFile=$tmpdir/package_"${name%.*}"_map.txt
-    
-    # Execute sas-admin command to upload the report package
-    # Output is redirected to the out file
-    #$clidir/sas-admin transfer upload --file $filename --mapping mappingFile > $out
-    
-    # Read the id of the uploaded package from the out file
-    #id="$(grep '"id":' $out | awk '{gsub(/"|,/, "", $2);print $2}')"
-    
-    # Import the uploaded package
-    #$clidir/sas-admin transfer import --id $id --name mappingFile
+
 done
