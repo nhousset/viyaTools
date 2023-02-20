@@ -26,6 +26,7 @@ helpFunction()
    echo ""
    echo -e "${YELLOW}Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>${NC}"
    echo "       $0 -u adminuser -p password -h http://viya35.ms -d /tmp/import/"
+   echo ""
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
    echo -e "\t-h Sets the URL to the SAS services. [\$SAS_SERVICES_ENDPOINT]"
