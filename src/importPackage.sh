@@ -84,7 +84,6 @@ for filename in $_JSONPATH/*.json; do
    # Execute sas-admin command to upload the report package  
    
    packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $filename | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
-   echo $?
    if [ $? == 0 ]
    then
    
@@ -95,7 +94,9 @@ for filename in $_JSONPATH/*.json; do
       echo "Package url :"$url
       echo "Package Id :"$packageId
       
-      #time /opt/sas/viya/home/bin/sas-admin --verbose transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
+      /opt/sas/viya/home/bin/sas-admin transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
+    else
+       echo -e "${RED}error while importing ${name} .${NC}"
     fi
 
 done
