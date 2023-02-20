@@ -87,7 +87,7 @@ for filename in $_JSONPATH/*.json; do
    
    # Execute sas-admin command to upload the report package  
    
-   packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $filename | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
+   packageId=$($clidir/sas-admin transfer upload --file  $filename | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
    if [ $? == 0 ]
    then
       nbImportOk=nbImportOk+1
@@ -98,7 +98,7 @@ for filename in $_JSONPATH/*.json; do
       echo -e "${YELLOW}Package url : ${NC}"$url
       echo -e "${YELLOW}Package Id : ${NC}"$packageId
       
-      /opt/sas/viya/home/bin/sas-admin transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
+     $clidir/sas-admin transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
       echo ""
       echo ""
     else
@@ -108,5 +108,10 @@ for filename in $_JSONPATH/*.json; do
 
 done
 
-echo -e "${GREEN}Package import completed [${nbImportOk}/${nbImport}]${NC}"
+if [ ${nbImport} -gt 0 ]
+then
+   $clidir/sas-admin reports list --details --sort-by ~id --limit ${nbImport}
+
+   echo -e "${GREEN}Package import completed [${nbImportOk}/${nbImport}]${NC}"
+ fi
 echo ""
