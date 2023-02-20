@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# SAS® Viya® 3.5 Administration: Using the Command-Line Interfaces - https://documentation.sas.com/doc/en/calcdc/3.5/calcli/titlepage.htm
+
 # Define variables
 clidir=/opt/sas/viya/home/bin
 tmpdir=/tmp
@@ -52,11 +55,11 @@ BLUE='\033[034m'
 NC='\033[0m' 
 
 # Set endpoint for default profile
-$clidir/sas-admin profile set-endpoint http://$HOSTNAME
-$clidir/sas-admin set-output text
+$clidir/sas-admin --colors-enabled profile set-endpoint http://$HOSTNAME
+$clidir/sas-admin --colors-enabled set-output text
 
 # Refresh authentication token
-$clidir/sas-admin auth login -user $USER -password $PASSWORD
+$clidir/sas-admin --colors-enabled auth login -user $USER -password $PASSWORD
 
 # Code to be executed for all .json files in the JSONPATH directory
 
