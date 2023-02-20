@@ -21,7 +21,7 @@ helpFunction()
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
    echo -e "\t-h Sets the URL to the SAS services. [\$SAS_SERVICES_ENDPOINT]"
-   echo -e "\t-d Description of what is parameterC"
+   echo -e "\t-d Sets the directory containing the json file(s) to import"
    exit 1 # Exit script after printing help
 }
 
