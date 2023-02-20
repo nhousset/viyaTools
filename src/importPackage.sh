@@ -60,6 +60,9 @@ $clidir/sas-admin --colors-enabled profile set-output fulljson
 
 # Refresh authentication token
 $clidir/sas-admin --colors-enabled auth login -user $_USER -password $_PASSWORD
+echo $?
+
+exit
 
 # Code to be executed for all .json files in the JSONPATH directory
 
