@@ -3,19 +3,37 @@
 clidir=/opt/sas/viya/home/bin
 tmpdir=/tmp
 
-for arg in "$@" ; do
-  case "$arg" in
-    --user)
-      USER=$@;;
-    --password)
-      PASSWORD=$@;;
-     --host)
-      HOSTNAME=$@;;
-      --jsonpath)
-      JSONPATH=$@;;
-            
-  esac
+
+helpFunction()
+{
+   echo ""
+   echo "Usage: $0 -u viya user -p viya password -h viya ms hostname -d json directory"
+   echo -e "\t-u Description of what is parameterA"
+   echo -e "\t-p Description of what is parameterB"
+   echo -e "\t-h Description of what is parameterC"
+   echo -e "\t-d Description of what is parameterC"
+   exit 1 # Exit script after printing help
+}
+
+while getopts "u:p:h:d" opt
+do
+   case "$opt" in
+      u ) USER="$OPTARG" ;;
+      p ) PASSWORD="$OPTARG" ;;
+      h ) HOSTNAME="$OPTARG" ;;
+      d ) JSONPATH="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
 done
+
+# Print helpFunction in case parameters are empty
+if [ -z "$USER" ] || [ -z "$PASSWORD" ] || [ -z "$HOSTNAME" ] || [ -z "$JSONPATH" ]
+then
+   echo "Some or all of the parameters are empty";
+   helpFunction
+fi
+
+# Begin script in case all parameters are correct
 
 echo $USER
 echo $PASSWORD
