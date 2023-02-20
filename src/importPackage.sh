@@ -59,8 +59,11 @@ $clidir/sas-admin --colors-enabled profile set-endpoint $_HOSTNAME
 $clidir/sas-admin --colors-enabled profile set-output fulljson
 
 # Refresh authentication token
-$clidir/sas-admin --colors-enabled auth login -user $_USER -password $_PASSWORD
-echo $?
+$clidir/sas-admin --colors-enabled auth login -user $_USER -password $_PASSWORD >/dev/null 2>/dev/null
+if [ $? == 1 ]
+then
+   echo "end error";
+fi
 
 exit
 
