@@ -55,18 +55,16 @@ fi
 
 # Begin script in case all parameters are correct
 
-
-
 # Set endpoint for default profile
-$clidir/sas-admin --colors-enabled profile set-endpoint $HOSTNAME
+$clidir/sas-admin --colors-enabled profile set-endpoint $_HOSTNAME
 $clidir/sas-admin --colors-enabled set-output text
 
 # Refresh authentication token
-$clidir/sas-admin --colors-enabled auth login -user $USER -password $PASSWORD
+$clidir/sas-admin --colors-enabled auth login -user $_USER -password $_PASSWORD
 
 # Code to be executed for all .json files in the JSONPATH directory
 
-for filename in $JSONPATH/*.json; do
+for filename in $_JSONPATH/*.json; do
 
     # Extract report name from the filename variable
     
