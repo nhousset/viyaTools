@@ -6,13 +6,13 @@ tmpdir=/tmp
 for arg in "$@" ; do
   case "$arg" in
     --user)
-      USER=$arg ;; 
+      USER="${opt#*=}";;
     --password)
-      PASSWORD=$arg ;; 
+      PASSWORD="${opt#*=}";;
      --host)
-      HOSTNAME=$arg ;; 
+      HOSTNAME="${opt#*=}";;
       --jsonpath)
-      JSONPATH=$arg ;; 
+      JSONPATH="${opt#*=}";;
             
   esac
 done
