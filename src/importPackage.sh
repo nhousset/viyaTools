@@ -76,7 +76,7 @@ fi
 typeset -i nbImport=0
 typeset -i nbImportOk=0
 for filename in $_JSONPATH/*.json; do
-   nbImpor=nbImport+1
+   nbImport=nbImport+1
    # Extract report name from the filename variable
    name=$(basename -- "$filename")
    
@@ -97,10 +97,13 @@ for filename in $_JSONPATH/*.json; do
       
       /opt/sas/viya/home/bin/sas-admin transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
       echo ""
+      echo ""
     else
        echo -e "${RED}error while importing ${name} .${NC}"
+       echo ""
     fi
 
 done
 
-echo "Packag import completed [${nbImportOk}/${nbImport}]"
+echo -e "${GREEN}"Package import completed [${nbImportOk}/${nbImport}]${NC}"
+echo ""
