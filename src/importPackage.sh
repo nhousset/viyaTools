@@ -17,6 +17,7 @@ helpFunction()
 
 while getopts "u:p:h:d" opt
 do
+echo $opt
    case "$opt" in
       u ) USER="$OPTARG" ;;
       p ) PASSWORD="$OPTARG" ;;
