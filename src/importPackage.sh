@@ -20,7 +20,7 @@ helpFunction()
    echo "Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>"
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
-   echo -e "\t-h Sets the URL to the SAS services. [_$SAS_SERVICES_ENDPOINT]"
+   echo -e "\t-h Sets the URL to the SAS services. [\$SAS_SERVICES_ENDPOINT]"
    echo -e "\t-d Description of what is parameterC"
    exit 1 # Exit script after printing help
 }
