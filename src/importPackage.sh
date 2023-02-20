@@ -15,7 +15,7 @@ helpFunction()
    exit 1 # Exit script after printing help
 }
 
-while getopts "u:p:h:d" opt
+while getopts "u:p:h:d:" opt
 do
 echo $opt
    case "$opt" in
