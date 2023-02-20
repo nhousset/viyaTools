@@ -56,7 +56,7 @@ fi
 
 # Set endpoint for default profile
 $clidir/sas-admin --colors-enabled profile set-endpoint $_HOSTNAME
-$clidir/sas-admin --colors-enabled -set-output text
+$clidir/sas-admin --colors-enabled --set-output text
 
 # Refresh authentication token
 $clidir/sas-admin --colors-enabled auth login -user $_USER -password $_PASSWORD
