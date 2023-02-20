@@ -26,6 +26,12 @@ do
    esac
 done
 
+echo $USER
+echo $PASSWORD
+echo $HOSTNAME
+echo $JSONPATH
+
+
 # Print helpFunction in case parameters are empty
 if [ -z "$USER" ] || [ -z "$PASSWORD" ] || [ -z "$HOSTNAME" ] || [ -z "$JSONPATH" ]
 then
