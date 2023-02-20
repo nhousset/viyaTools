@@ -2,10 +2,27 @@
 # Define variables
 clidir=/opt/sas/viya/home/bin
 tmpdir=/tmp
-USER=$1
-PASSWORD=$2
-HOSTNAME=$3
-JSONPATH=$4
+
+for arg in "$@" ; do
+  case "$arg" in
+    --user)
+      USER=$arg ;; 
+    --password)
+      PASSWORD=$arg ;; 
+     --host)
+      HOSTNAME=$arg ;; 
+      --jsonpath)
+      JSONPATH=$arg ;; 
+            
+  esac
+done
+
+echo $USER
+echo $PASSWORD
+echo $HOSTNAME
+echo $JSONPATH
+
+exit
 
 RED='\033[031m'
 GREEN='\033[032m'
