@@ -76,7 +76,7 @@ fi
 typeset -i nbImport=0
 typeset -i nbImportOk=0
 for filename in $_JSONPATH/*.json; do
-   nbImport++
+   nbImpor=nbImport+1
    # Extract report name from the filename variable
    name=$(basename -- "$filename")
    
@@ -87,7 +87,7 @@ for filename in $_JSONPATH/*.json; do
    packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $filename | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
    if [ $? == 0 ]
    then
-      nbImportOk++
+      nbImportOk=nbImportOk+1
       # Import the uploaded package
       
       url="http://$_HOSTNAME/transfer/packages/$packageId"
