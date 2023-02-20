@@ -56,8 +56,6 @@ fi
 # Begin script in case all parameters are correct
 
 
-exit
-
 
 # Set endpoint for default profile
 $clidir/sas-admin --colors-enabled profile set-endpoint $HOSTNAME
