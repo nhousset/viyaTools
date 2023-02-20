@@ -72,8 +72,6 @@ then
    exit 1 
 fi
 
-exit 0
-
 # Code to be executed for all .json files in the JSONPATH directory
 
 for filename in $_JSONPATH/*.json; do
@@ -81,18 +79,21 @@ for filename in $_JSONPATH/*.json; do
    # Extract report name from the filename variable
    name=$(basename -- "$filename")
    
-   echo $name;
-    
-   #/opt/sas/viya/home/bin/sas-admin transfer upload --file $filename
+   echo "Processing : ${name}"
+   /opt/sas/viya/home/bin/sas-admin transfer upload --file $filename
+   echo $?
+   if [ $? == 0 ]
+   then
 
-   packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $project_name.json | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
-   url="http://$_HOSTNAME/transfer/packages/$packageId"
+      packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $project_name.json | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
+      url="http://$_HOSTNAME/transfer/packages/$packageId"
    
-   echo "url :"$url
-   echo "packageId :"$packageId
+      echo "url :"$url
+      echo "packageId :"$packageId
 
-   #time /opt/sas/viya/home/bin/sas-admin --verbose transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
-
+      #time /opt/sas/viya/home/bin/sas-admin --verbose transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
+    fi
+    
     # Extract report name from the filename variable
     #name=$(basename -- "$filename")
     
