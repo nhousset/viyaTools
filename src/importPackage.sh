@@ -19,22 +19,22 @@ while getopts "u:p:h:d" opt
 do
 echo $opt
    case "$opt" in
-      u ) USER="$OPTARG" ;;
-      p ) PASSWORD="$OPTARG" ;;
-      h ) HOSTNAME="$OPTARG" ;;
-      d ) JSONPATH="$OPTARG" ;;
+      u ) _USER="$OPTARG" ;;
+      p ) _PASSWORD="$OPTARG" ;;
+      h ) _HOSTNAME="$OPTARG" ;;
+      d ) _JSONPATH="$OPTARG" ;;
       ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
    esac
 done
 
-echo $USER
-echo $PASSWORD
-echo $HOSTNAME
-echo $JSONPATH
+echo $_USER
+echo $_PASSWORD
+echo $_HOSTNAME
+echo $_JSONPATH
 
 
 # Print helpFunction in case parameters are empty
-if [ -z "$USER" ] || [ -z "$PASSWORD" ] || [ -z "$HOSTNAME" ] || [ -z "$JSONPATH" ]
+if [ -z "$_USER" ] || [ -z "$_PASSWORD" ] || [ -z "$_HOSTNAME" ] || [ -z "$_JSONPATH" ]
 then
    echo "Some or all of the parameters are empty";
    helpFunction
@@ -42,10 +42,6 @@ fi
 
 # Begin script in case all parameters are correct
 
-echo $USER
-echo $PASSWORD
-echo $HOSTNAME
-echo $JSONPATH
 
 exit
 
