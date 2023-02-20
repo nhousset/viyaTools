@@ -110,8 +110,6 @@ done
 
 if [ ${nbImport} -gt 0 ]
 then
-   $clidir/sas-admin reports list --details --sort-by creationTimeStamp --limit ${nbImport}
-
-   echo -e "${GREEN}Package import completed [${nbImportOk}/${nbImport}]${NC}"
+     echo -e "${GREEN}Package import completed [${nbImportOk}/${nbImport}]${NC}"
  fi
 echo ""
