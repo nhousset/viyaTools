@@ -73,9 +73,10 @@ then
 fi
 
 # Code to be executed for all .json files in the JSONPATH directory
-
+typeset -i nbImport=0
+typeset -i nbImportOk=0
 for filename in $_JSONPATH/*.json; do
-
+   nbImport++
    # Extract report name from the filename variable
    name=$(basename -- "$filename")
    
@@ -86,7 +87,7 @@ for filename in $_JSONPATH/*.json; do
    packageId=$(/opt/sas/viya/home/bin/sas-admin transfer upload --file  $filename | grep id | awk '{ print $2}' | sed 's/"//g' | sed 's/,//g')
    if [ $? == 0 ]
    then
-   
+      nbImportOk++
       # Import the uploaded package
       
       url="http://$_HOSTNAME/transfer/packages/$packageId"
@@ -95,8 +96,11 @@ for filename in $_JSONPATH/*.json; do
       echo "Package Id :"$packageId
       
       /opt/sas/viya/home/bin/sas-admin transfer import --request "{\"packageUri\":\"/transfer/packages/$packageId\"}"
+      echo ""
     else
        echo -e "${RED}error while importing ${name} .${NC}"
     fi
 
 done
+
+echo "Packag import completed [${nbImportOk}/${nbImport}]"
