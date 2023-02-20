@@ -8,7 +8,12 @@
 
 This repository contains tools dedicated to SAS Viya 3.5
 
-## Micro Service Health Check VIYA 3.5
+## Services Health Check VIYA 3.5
 
 This tool launches a complete audit of a SAS VIYA 3.5 platform.
 https://github.com/nhousset/viyaTools/blob/main/msHealthCheck.md 
+
+## Import Json
+
+This tool allows you to import files in a VIYA 3.5 platform.
+https://github.com/nhousset/viyaTools/blob/main/importPackage.md
