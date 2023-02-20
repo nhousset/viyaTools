@@ -1,6 +1,13 @@
 #!/bin/bash
 
-# SAS® Viya® 3.5 Administration: Using the Command-Line Interfaces - https://documentation.sas.com/doc/en/calcdc/3.5/calcli/titlepage.htm
+# *********************************************************
+# *** Import package VIYA 3.5
+# *** (c) Nicolas Housset
+# *** https://www.nicolas-housset.fr
+# ***
+# *** SAS® Viya® 3.5 Administration: Using the Command-Line Interfaces - https://documentation.sas.com/doc/en/calcdc/3.5/calcli/titlepage.htm
+# *** Command-Line Interfaces - CLI Examples: Reports - https://documentation.sas.com/doc/en/calcdc/3.5/calcli/n09r8rzfe0xt6gn1krnt75beevgk.htm
+# *********************************************************
 
 # Define variables
 clidir=/opt/sas/viya/home/bin
@@ -10,10 +17,10 @@ tmpdir=/tmp
 helpFunction()
 {
    echo ""
-   echo "Usage: $0 -u <viya user> -p <viya password> -h <viya ms hostname> -d <json directory>"
+   echo "Usage: $0 -u <viya user> -p <viya password> -h <the URL to the SAS services> -d <json directory>"
    echo -e "\t-u Description of what is parameterA"
    echo -e "\t-p Description of what is parameterB"
-   echo -e "\t-h Description of what is parameterC"
+   echo -e "\t-h Sets the URL to the SAS services. [_$SAS_SERVICES_ENDPOINT]"
    echo -e "\t-d Description of what is parameterC"
    exit 1 # Exit script after printing help
 }
