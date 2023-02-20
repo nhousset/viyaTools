@@ -41,3 +41,4 @@ importPackage.sh
 
 -d Sets the directory containing the json file(s) to import
 
+![Import Package](https://github.com/nhousset/viyaTools/blob/main/img/importpackage.JPG?raw=true)
