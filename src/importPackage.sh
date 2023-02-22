@@ -34,6 +34,8 @@ helpFunction()
    exit 1 # Exit script after printing help
 }
 
+_HOSTNAME="http://localhost"
+
 while getopts "u:p:h:d:" opt
 do
    case "$opt" in
