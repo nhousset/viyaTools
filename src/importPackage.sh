@@ -72,8 +72,17 @@ then
    exit 1 
 fi
 
+# Count the number of files to import
+typeset -i nbFileToImport
+nbFileToImport=$(ls -lrt $_JSONPATH | grep ".json" | wc -l)
+if [ $nbFileToImport -eq 0 ]
+then
+   echo -e "${RED}There is no json file in the $_JSONPATH directory${NC}"
+   exit 0
+fi
+
 echo ""
-echo -e "${YELLOW}Import json files from ${_JSONPATH}${NC}"
+echo -e "${YELLOW}Import json $nbFileToImport files from ${_JSONPATH}${NC}"
  
 # Code to be executed for all .json files in the JSONPATH directory
 typeset -i nbImport=0
