@@ -70,6 +70,8 @@ if [ $? == 1 ]
 then  
    echo -e "${RED}Login failed. Bad userid or password.${NC}"
    exit 1 
+else
+   echo -e "${GREEN}Login to $_HOSTNAME succesfull.${NC}"
 fi
 
 # Count the number of files to import
