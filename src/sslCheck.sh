@@ -79,13 +79,13 @@ case $1 in
 # Usage example
 help)
         echo -ne "Usage:
-$(ColorGreen './ssl domain.com')
+$(ColorGreen './sslCheck.sh domain.com')
 "
         exit 1
 ;;
 "")
         echo -ne "Usage:
-$(ColorGreen './ssl domain.com')
+$(ColorGreen './sslCheck.sh domain.com')
 "
         exit 1
 ;;
