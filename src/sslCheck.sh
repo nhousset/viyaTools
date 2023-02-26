@@ -91,10 +91,10 @@ $(ColorGreen './ssl domain.com')
 ;;
 *)
 	today=$(date +%F)
-	expires=$(echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -dates|grep 'notAfter'|sed 's/notAfter=//')
+	expires=$(echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -dates|grep 'notAfter'|sed 's/notAfter=//')
 
 	echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate Issued For:')"
-	echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -subject|sed 's/subject=/Domain: /'
+	echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -subject|sed 's/subject=/Domain: /'
 	echo "$(ColorRed '----')"
 
    echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate Expires In:')"
@@ -119,12 +119,12 @@ case $OS in
 esac
 	echo "$(ColorRed '----')"
 	echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate Dates:')"
-	echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -dates|\
+	echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -dates|\
 	 sed 's/notAfter=/Expires On: /' | sed 's/notBefore=/Issued  On: /'
 	echo "$(ColorRed '----')"
 
    echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate Issued by:')"
-	echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -issuer|sed 's/issuer=/Issuer: /'
+	echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -issuer|sed 's/issuer=/Issuer: /'
 	echo "$(ColorRed '----')"
 
    echo -e "$(ColorRed '#') $(ColorGreen 'TLS supported:')"
@@ -133,18 +133,18 @@ esac
 	echo "$(ColorRed '----')"
    
 	echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate SANs:')"
-	#echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -extensions subjectAltName
-	echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null|openssl x509 -text |egrep "DNS:"|tr -d " \t"|tr , '\n'|sed  's/^/	/'
+	#echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null | openssl x509 -noout -extensions subjectAltName
+	echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null|openssl x509 -text |egrep "DNS:"|tr -d " \t"|tr , '\n'|sed  's/^/	/'
 	echo "$(ColorRed '----')"
 
 	echo -e "$(ColorRed '#') $(ColorGreen 'Certificate Chains:')"
-	ColorOrangeON; timeout 2 openssl s_client -quiet -showcerts -servername $1 -connect $1:443;ColorClear 
+	ColorOrangeON; timeout 2 openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -quiet -showcerts -servername $1 -connect $1:443;ColorClear 
 	echo "$(ColorRed '----')"
    echo -e "$(ColorRed '#') $(ColorGreen 'Certificates Details:')"
-	#certificates=$(openssl s_client -connect $1:443 -showcerts -tlsextdebug -tls1 2>&1 </dev/null| \
+	#certificates=$(openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -connect $1:443 -showcerts -tlsextdebug -tls1 2>&1 </dev/null| \
 	#sed -n '/-----BEGIN/,/-----END/ {/-----BEGIN/ s/^/:/p}'); 
 	OLDIFS=$IFS; IFS=':' 
-	certificates=$(echo|openssl s_client -servername $1 -showcerts -connect "$1:443" 2>&1| \
+	certificates=$(echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -showcerts -connect "$1:443" 2>&1| \
 	sed -n '/-----BEGIN/,/-----END/p'|sed 's/^-----BEGIN/:-----BEGIN/'); 
 	for certificate in ${certificates#:}; do ColorOrangeON
 		#echo $certificate | tee >(openssl x509 -noout -serial) >(openssl x509 -noout -subject) 
@@ -152,6 +152,6 @@ esac
 	done; IFS=$OLDIFS
 	echo "$(ColorRed '----')"
 #   echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate Decode:')"; ColorCyanON
-#	echo|openssl s_client -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -text
+#	echo|openssl s_client -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -servername $1 -connect $1:443 2>/dev/null|openssl x509 -noout -text
 esac
 #echo -ne "$(ColorRed '\n---------------------------------------------------------')\n" 
