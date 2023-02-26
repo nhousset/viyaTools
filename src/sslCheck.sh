@@ -148,7 +148,7 @@ esac
 	sed -n '/-----BEGIN/,/-----END/p'|sed 's/^-----BEGIN/:-----BEGIN/'); 
 	for certificate in ${certificates#:}; do ColorOrangeON
 		#echo $certificate | tee >(openssl x509 -noout -serial) >(openssl x509 -noout -subject) 
-		for attr in subject serial fingerprint; do echo $certificate|openssl x509 -CAfile /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem -noout -$attr|tr -d ":"| tr '[:upper:]' '[:lower:]' ;done; echo ''
+		for attr in subject serial fingerprint; do echo $certificate|openssl x509  -noout -$attr|tr -d ":"| tr '[:upper:]' '[:lower:]' ;done; echo ''
 	done; IFS=$OLDIFS
 	echo "$(ColorRed '----')"
 #   echo -e "$(ColorRed '#') $(ColorGreen 'Leaf Certificate Decode:')"; ColorCyanON
