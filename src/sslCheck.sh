@@ -63,6 +63,13 @@ if ! [ -x "$(command -v openssl)" ] ; then
 fi
 
 ##
+# Make sure that nmap is installed
+##
+if ! [ -x "$(command -v nmap)" ] ; then
+        echo "The nmap command is required for full test! "
+fi
+
+##
 # Check if there is an input
 ##
 if [[ $1 ]]; then
