@@ -114,6 +114,13 @@ _GLOBAL_PGPOOL_STATUS="KO"
 echo -en  "${RED}Check system ${NC}\n"
 echo -en  "${RED}==================================================${NC}\n"
 
+
+
+echo -en  "${YELLOW}Linux Version${NC}\n"
+echo -en  "${BLUE}cat /etc/redhat-release${NC} : " 
+cat /etc/redhat-release
+echo -en  "\n"
+
 echo -en  "${YELLOW}Hostname Info${NC}\n"
 echo -en  "${BLUE}hostname -s${NC} : " 
 hostname -s
@@ -131,6 +138,12 @@ echo -en  "${BLUE}hostnamectl${NC}\n"
 hostnamectl
 echo -en  "\n"
 
+echo -en  "${BLUE}/etc/hosts${NC}\n"
+cat /etc/hosts
+echo -en  "\n"
+
+# nslookup TODO sur /etc/hosts + CHECK
+
 echo -en  "${YELLOW}CPU Info${NC} : "
 cat /proc/cpuinfo | grep processor |  wc -l
 echo ""
@@ -144,6 +157,19 @@ df -h /var/log
 
 echo -en  "${YELLOW}SELinux${NC}\n"
 /sbin/sestatus | grep "Current mode"
+/etc/selinux/config |grep SELINUX
+
+
+echo -en  "${YELLOW}Ulimit values ${NC}\n"
+ulimit -a
+
+echo -en  "${YELLOW}Check /etc/sysctl.conf ${NC}\n"
+cat /etc/sysctl.conf | grep "kernel\.sem\|net\.core\.somaxconn"
+
+echo -en  "${YELLOW}Check systemd - Default Time-Outs ${NC}\n"
+# SAS® Business Orchestration Services 10.1: Deployment Guide
+# https://documentation.sas.com/doc/en/dplyboss0phy0lax/10.1/p06ojoph47tdwin12otv7qfoxqo3.htm#n029evhqptj50tn1uypnh8epqe1m
+cat /etc/systemd/system.conf | grep DefaultTimeoutSt
 
 if [ "${_GLOBAL_FULL}" == "1" ]
 then
