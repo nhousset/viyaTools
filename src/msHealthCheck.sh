@@ -153,7 +153,8 @@ free -h
 
 echo -en  "${YELLOW}Disk space${NC}\n"
 df -h /opt/
-df -h /var/log
+df -h /var/log/
+df -h /tmp/
 
 echo -en  "${YELLOW}SELinux${NC}\n"
 /sbin/sestatus | grep "Current mode"
@@ -206,6 +207,10 @@ echo -en "\n"
 
 if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
 then
+	
+	# *** 
+	# *** Web server verification
+	# ***
 	echo -en  "${YELLOW}Apache${NC}\n"                                         
 	netstat -tupln | grep :80
 	netstat -tupln | grep :443
@@ -405,6 +410,35 @@ then
 	echo -en  $SASDrive"\n"
 
 fi
+
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** CAS ${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+
+#configured caslib
+
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** ELASTICSEARCH ${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+
+# elasticSearch 
+
+echo ""
+echo -en "${RED}************************${NC}\n"   
+echo -en "${RED}*** SPRE ${NC}\n"                                      
+echo -en "${RED}************************${NC}\n"   
+echo ""
+
+#proc setinit; run;
+
+# check allowXCMD 
+# systask command "id" shell wait ;
+
+
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
