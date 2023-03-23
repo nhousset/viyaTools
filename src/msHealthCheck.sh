@@ -142,7 +142,14 @@ echo -en  "${BLUE}/etc/hosts${NC}\n"
 cat /etc/hosts
 echo -en  "\n"
 
-# nslookup TODO sur /etc/hosts + CHECK
+echo -en  "${BLUE}nslookup${NC}\n"
+while read line  
+do   
+   echo -e "${YELLOW}$line${NC}"
+   hostIP=$(echo -e "$line" | awk '{ print $1}')
+   hostFQDN=$(echo -e "$line" | awk '{ print $2}')
+   nslookup $hostFQDN
+done < /etc/hosts
 
 echo -en  "${YELLOW}CPU Info${NC} : "
 cat /proc/cpuinfo | grep processor |  wc -l
