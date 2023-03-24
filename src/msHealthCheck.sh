@@ -43,6 +43,8 @@ for arg in "$@" ; do
   esac
 done
 
+read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+
 if [ "${_GLOBAL_CHECKUPDATE}" == "1" ]
 then
 	echo -en "${BLUE}==================================================${NC}\n"
@@ -446,6 +448,20 @@ echo ""
 
 # check allowXCMD 
 # systask command "id" shell wait ;
+
+read -p "Viya Admin Username? : " _SAS_USER 
+read -p "Viya Admin Password? : " _SAS_PASSWORD 
+
+
+clidir=/opt/sas/viya/home/bin
+$clidir/sas-admin --colors-enabled profile set-endpoint http://localhost
+$clidir/sas-admin --colors-enabled profile set-output fulljson
+
+$clidir/sas-admin --colors-enabled auth login -user $_SAS_USER -password $_SAS_PASSWORD 
+
+$clidir/sas-admin licenses site-info list
+$clidir/sas-admin licenses products list --expired
+$clidir/sas-admin licenses count --current
 
 
 
