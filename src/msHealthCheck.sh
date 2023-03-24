@@ -254,6 +254,9 @@ then
 
 	echo -en  "${YELLOW}sas-ops info${NC}\n"
 	/opt/sas/viya/home/bin/sas-ops info
+	
+	echo -en  "${YELLOW}sas-ops tasks agent${NC}\n"
+	/opt/sas/viya/home/bin/sas-ops tasks --name "ops-agentsrv"
 fi
 
 if [[ "${_GLOBAL_PROFIL}" == "ALL" || "${_GLOBAL_PROFIL}" == "MS"  ]]
