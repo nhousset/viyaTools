@@ -163,6 +163,8 @@ df -h /opt/
 df -h /var/log/
 df -h /tmp/
 
+# TODO ajouter une option  pour avoir le FS du CAS_CACHE_DISK
+
 echo -en  "${YELLOW}SELinux${NC}\n"
 /sbin/sestatus | grep "Current mode"
 /etc/selinux/config |grep SELINUX
