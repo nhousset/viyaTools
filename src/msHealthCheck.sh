@@ -435,8 +435,19 @@ echo -en "${RED}************************${NC}\n"
 echo -en "${RED}*** ELASTICSEARCH ${NC}\n"                                      
 echo -en "${RED}************************${NC}\n"   
 echo ""
+# https://documentation.sas.com/doc/en/calcdc/3.5/dplyml0phy0lax/n0s1g2zrw0jfbln1kd0r88zg6nlx.htm
 
-# elasticSearch 
+vault_token=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/elasticsearch-secure/default/vault.token
+ca_cert=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
+key_file=/tmp/elastic-verification-key.pem
+cert_file=/tmp/elastic-verification-cert.pem
+
+source /opt/sas/viya/config/consul.conf
+read vault_ip vault_port <<< $(/opt/sas/viya/home/bin/sas-bootstrap-config catalog service vault | awk '/"address"/||/"servicePort"/{print $2}' |sed -e 's/"//g' -e 's/,//' | head -n 2)
+
+/opt/sas/viya/home/SASSecurityCertificateFramework/bin/sas-crypto-management req-vault-cert --common-name "sgadmin" --vault-addr "https://${vault_ip}:${vault_port}" --vault-cafile "${ca_cert}" --vault-token "${vault_token}"  --out-crt "${cert_file}"  --out-form 'pem' --out-key "${key_file}"
+curl --cacert ${ca_cert} --key ${key_file} --cert ${cert_file} https://IP-address-for-Elasticsearchmaster-node:9200/_cluster/health?pretty=true
+
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
