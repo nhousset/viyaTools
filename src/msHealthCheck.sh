@@ -167,6 +167,14 @@ df -h /opt/
 df -h /var/log/
 df -h /tmp/
 
+echo -en  "${YELLOW}noexec${NC}\n"
+findmnt -l | grep noexec
+
+echo -en  "${YELLOW}fstab${NC}\n"
+cat /etc/fstab
+
+
+
 # TODO ajouter une option  pour avoir le FS du CAS_CACHE_DISK
 
 echo -en  "${YELLOW}SELinux${NC}\n"
