@@ -8,6 +8,8 @@
 # *** Source : https://support.sas.com/kb/69/131.html
 # *********************************************************
 
+#  export ANSIBLE_KEEP_REMOTE_FILES=1
+
 
 source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
