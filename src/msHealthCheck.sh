@@ -9,7 +9,7 @@
 # *********************************************************
 
 #  export ANSIBLE_KEEP_REMOTE_FILES=1
-
+# ansible.cfg
 
 source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
