@@ -15,6 +15,8 @@ source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
 export SSL_CERT_FILE=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
 
+
+
 RED='\033[031m'
 GREEN='\033[032m'
 YELLOW='\033[033m'
@@ -281,6 +283,11 @@ then
 	ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tls/certs/sasdatasvrc/postgres/pgpool0/sascert.pem
 	ls -lrt /opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
 fi
+
+
+### BOOTSTRAP CONFIG
+export CONSUL_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/management.token)
+/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config > /tmp/sas-bootstrap-config
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
