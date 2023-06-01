@@ -1,12 +1,14 @@
 #!/bin/bash 
 
+CAS_DISK_CACHE_PATH=sastmp
+
 while [ 1=1 ]
 do
   UnixDate=$(date +%s)
   FrenchDate=$(date '+%F %T');  
       
   CASLogFile=$(ls -lrt /var/log/sas/viya/cas/default/ | grep cas_ | tail -1 | awk '{print $9}' )
-
+ 
   sommeCpu=0
   nbSasProcess=0
   i=0
@@ -21,12 +23,17 @@ do
    processRSS=$(echo $process | cut -d ";" -f 6)
    processStart=$(echo $process | cut -d ";" -f 7)
    
-   sasUser=$(grep "Launched session controller. Process ID is $processPID" /var/log/sas/viya/cas/default/$CASLogFile | tail -1 | awk '{print $1";"$5}'  )
+   sasUser=$(grep "Launched session worker. Process ID is $processPID" /var/log/sas/viya/cas/default/$CASLogFile | tail -1 | awk '{print $5}'  )
    
-   echo $sasUser";"$process
+ 
+   echo $UnixDate";"$FrenchDate";"$sasUser";"$processPID";"$processVSZ";"$processRSS";"$processUser";"$NB_FILE_MAP
    
-   
+  
   done
+  echo ""
+  sleep 30
+  
  done
  
  
+
