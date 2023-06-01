@@ -1,0 +1,32 @@
+#!/bin/bash 
+
+while [ 1=1 ]
+do
+  UnixDate=$(date +%s)
+  FrenchDate=$(date '+%F %T');  
+      
+  CASLogFile=$(ls -lrt /var/log/sas/viya/cas/default/ | grep cas_ | tail -1 | awk '{print $9}' )
+
+  sommeCpu=0
+  nbSasProcess=0
+  i=0
+  for process in $(ps -aux | grep -v root | grep "cas session" | awk '{print $1";"$2";"$3";"$4";"$5";"$6";"$8";"$9}'  |  grep -v grep )
+  do
+  
+   processUser=$(echo $process | cut -d ";" -f 1)
+   processPID=$(echo $process | cut -d ";" -f 2)
+   processCPU=$(echo $process | cut -d ";" -f 3)
+   processMEM=$(echo $process | cut -d ";" -f 4)
+   processVSZ=$(echo $process | cut -d ";" -f 5)
+   processRSS=$(echo $process | cut -d ";" -f 6)
+   processStart=$(echo $process | cut -d ";" -f 7)
+   
+   sasUser=$(grep "Launched session controller. Process ID is $processPID" /var/log/sas/viya/cas/default/$CASLogFile | tail -1 | awk '{print $1";"$5}'  )
+   
+   echo $sasUser";"$process
+   
+   
+  done
+ done
+ 
+ 
