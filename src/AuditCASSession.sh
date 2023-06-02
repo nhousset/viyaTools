@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 CAS_DISK_CACHE_PATH=sastmp
-
+echo "UNIXTIMESTAMP;DATE;SAS_USER;PID;VSZ;RSS;UNIX_USER;NB_FILE_IN_CACHE" 
 while [ 1=1 ]
 do
   UnixDate=$(date +%s)
@@ -25,7 +25,7 @@ do
    
    sasUser=$(grep "Launched session worker. Process ID is $processPID" /var/log/sas/viya/cas/default/$CASLogFile | tail -1 | awk '{print $5}'  )
    
- 
+   NB_FILE_MAP=$(lsof -p $processPID | grep $CAS_DISK_CACHE_PATH |wc -l)
    echo $UnixDate";"$FrenchDate";"$sasUser";"$processPID";"$processVSZ";"$processRSS";"$processUser";"$NB_FILE_MAP
    
   
