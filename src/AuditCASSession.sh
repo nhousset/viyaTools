@@ -1,6 +1,6 @@
 #!/bin/bash 
 
-CAS_DISK_CACHE_PATH=sastmp
+CAS_DISK_CACHE_PATH=cas_cache_disk
 while [ 1=1 ]
 do
   UnixDate=$(date +%s)
@@ -34,7 +34,10 @@ do
    memAvailable=$(free | grep -v total | grep -v Swap | awk '{print $7}' )
    
    NB_FILE_MAP=$(lsof -p $processPID | grep $CAS_DISK_CACHE_PATH |wc -l)
-   echo $nomServeur";"$UnixDate";"$FrenchDate";"$sasUser";"$processPID";"$processVSZ";"$processRSS";"$processUser";"$NB_FILE_MAP";"$NB_FILE_MAP";"$memTotal";"$memUsed";"$memFree";"$memShared";"$memCache";"$memAvailable
+   typeset -i SIZE_IN_CACHE=0
+   SIZE_IN_CACHE=`expr $NB_FILE_MAP*64*1024`
+    
+   echo $nomServeur";"$UnixDate";"$FrenchDate";"$sasUser";"$processPID";"$processVSZ";"$processRSS";"$processUser";"$NB_FILE_MAP";"$SIZE_IN_CACHE";"$memTotal";"$memUsed";"$memFree";"$memShared";"$memCache";"$memAvailable
    
   
   done
