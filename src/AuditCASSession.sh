@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 CAS_DISK_CACHE_PATH=cas_cache_disk
-echo "nomServeur,UnixDate,FrenchDate,sasUser,processPID,processVSZ,processRSS,processUser,NB_FILE_MAP,SIZE_IN_CACHE,memTotal,memUsed,memFree,memShared,memCache,memAvailable"
+echo "nomServeur,UnixDate,FrenchDate,sasUser,processPID,processVSZ,processRSS,processUser,NB_FILE_MAP,SIZE_IN_CACHE,memTotal,memUsed,memFree,memShared,memCache,memAvailable,sasDate,processMEMGO,processVSZGO,processRSSGO,SIZE_IN_CACHE_GO"
 while [ 1=1 ]
 do
   UnixDate=$(date +%s)
@@ -24,6 +24,11 @@ do
    processRSS=$(echo $process | cut -d ";" -f 6)
    processStart=$(echo $process | cut -d ";" -f 7)
    
+   
+   processMEMGO=$(echo $processMEM / 1024/ 1024 | bc -l )
+   processVSZGO=$(echo $processVSZ / 1024/ 1024 | bc -l )
+   processRSSGO=$(echo $processRSS  / 1024/ 1024 | bc -l )
+   
    sasUser=$(grep "Launched session" /var/log/sas/viya/cas/default/$CASLogFile |  grep "Process ID is $processPID" | tail -1 | awk '{print $5}'  )
    
    
@@ -37,8 +42,12 @@ do
    NB_FILE_MAP=$(lsof -p $processPID | grep $CAS_DISK_CACHE_PATH |wc -l)
    typeset -i SIZE_IN_CACHE=0
    SIZE_IN_CACHE=`expr $NB_FILE_MAP*8*1024*1024`
+   SIZE_IN_CACHE_GO=$(echo $SIZE_IN_CACHE  / 1024/ 1024 | bc -l )
     
-   echo $nomServeur","$UnixDate","$FrenchDate","$sasUser","$processPID","$processVSZ","$processRSS","$processUser","$NB_FILE_MAP","$SIZE_IN_CACHE","$memTotal","$memUsed","$memFree","$memShared","$memCache","$memAvailable
+   typeset -i sasDate=0
+     
+   sasDate=`expr $UnixDate-315360000`
+   echo $nomServeur","$UnixDate","$FrenchDate","$sasUser","$processPID","$processVSZ","$processRSS","$processUser","$NB_FILE_MAP","$SIZE_IN_CACHE","$memTotal","$memUsed","$memFree","$memShared","$memCache","$memAvailable","$sasDate","$processMEMGO","$processVSZGO","$processRSSGO","$SIZE_IN_CACHE_GO
    
   
   done
