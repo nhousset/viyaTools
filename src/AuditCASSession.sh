@@ -41,8 +41,7 @@ do
    
   
   done
-  echo ""
-  sleep 30
+  sleep 10
   
  done
  
