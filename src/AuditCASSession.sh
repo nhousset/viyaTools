@@ -35,7 +35,7 @@ do
    
    NB_FILE_MAP=$(lsof -p $processPID | grep $CAS_DISK_CACHE_PATH |wc -l)
    typeset -i SIZE_IN_CACHE=0
-   SIZE_IN_CACHE=`expr $NB_FILE_MAP*64*1024`
+   SIZE_IN_CACHE=`expr $NB_FILE_MAP*8*1024*1024`
     
    echo $nomServeur";"$UnixDate";"$FrenchDate";"$sasUser";"$processPID";"$processVSZ";"$processRSS";"$processUser";"$NB_FILE_MAP";"$SIZE_IN_CACHE";"$memTotal";"$memUsed";"$memFree";"$memShared";"$memCache";"$memAvailable
    
