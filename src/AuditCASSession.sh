@@ -1,6 +1,7 @@
 #!/bin/bash 
 
 CAS_DISK_CACHE_PATH=cas_cache_disk
+echo "nomServeur,UnixDate,FrenchDate,sasUser,processPID,processVSZ,processRSS,processUser,NB_FILE_MAP,SIZE_IN_CACHE,memTotal,memUsed,memFree,memShared,memCache,memAvailable"
 while [ 1=1 ]
 do
   UnixDate=$(date +%s)
@@ -37,7 +38,7 @@ do
    typeset -i SIZE_IN_CACHE=0
    SIZE_IN_CACHE=`expr $NB_FILE_MAP*8*1024*1024`
     
-   echo $nomServeur";"$UnixDate";"$FrenchDate";"$sasUser";"$processPID";"$processVSZ";"$processRSS";"$processUser";"$NB_FILE_MAP";"$SIZE_IN_CACHE";"$memTotal";"$memUsed";"$memFree";"$memShared";"$memCache";"$memAvailable
+   echo $nomServeur","$UnixDate","$FrenchDate","$sasUser","$processPID","$processVSZ","$processRSS","$processUser","$NB_FILE_MAP","$SIZE_IN_CACHE","$memTotal","$memUsed","$memFree","$memShared","$memCache","$memAvailable
    
   
   done
