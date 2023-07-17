@@ -56,7 +56,7 @@ fi
 
 # Set endpoint for default profile
 $clidir/sas-admin --colors-enabled profile set-endpoint $_HOSTNAME
-$clidir/sas-admin --colors-enabled profile set-output fulljson
+#$clidir/sas-admin --colors-enabled profile set-output fulljson
 
 # Refresh authentication token
 $clidir/sas-admin --colors-enabled auth login -user $_USER -password $_PASSWORD >/dev/null 2>/dev/null
@@ -68,7 +68,7 @@ else
    echo -e "${GREEN}Login to $_HOSTNAME succesfull.${NC}"
 fi
 
-$clidir/sas-admin cas sessions list --server cas-shared-default
+$clidir/sas-admin cas sessions list --server $SAS_CLI_DEFAULT_CAS_SERVER --sort-by state
 
 
-# $clidir/sas-admin cas sessions delete --session-id f636fd46-0477-df46-ab2b-faaa51a8cb36  --force
+# $clidir/sas-admin cas sessions delete --session-id d72397f0-1476-d94e-85ec-4b1ae8aa44a0  --force
