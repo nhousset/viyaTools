@@ -19,7 +19,7 @@ YELLOW='\033[033m'
 BLUE='\033[034m'
 NC='\033[0m' 
 
-
+export SAS_CLI_DEFAULT_CAS_SERVER=cas-shared-default
 
 helpFunction()
 {
