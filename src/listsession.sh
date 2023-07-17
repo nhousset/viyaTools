@@ -6,7 +6,6 @@
 # *** https://www.nicolas-housset.fr
 # ***
 # *** SAS® Viya® 3.5 Administration: Using the Command-Line Interfaces - https://documentation.sas.com/doc/en/calcdc/3.5/calcli/titlepage.htm
-# *** Command-Line Interfaces - CLI Examples: Reports - https://documentation.sas.com/doc/en/calcdc/3.5/calcli/n09r8rzfe0xt6gn1krnt75beevgk.htm
 # *********************************************************
 
 # Define variables
