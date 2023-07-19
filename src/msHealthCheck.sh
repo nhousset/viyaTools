@@ -468,6 +468,8 @@ read vault_ip vault_port <<< $(/opt/sas/viya/home/bin/sas-bootstrap-config catal
 /opt/sas/viya/home/SASSecurityCertificateFramework/bin/sas-crypto-management req-vault-cert --common-name "sgadmin" --vault-addr "https://${vault_ip}:${vault_port}" --vault-cafile "${ca_cert}" --vault-token "${vault_token}"  --out-crt "${cert_file}"  --out-form 'pem' --out-key "${key_file}"
 curl --cacert ${ca_cert} --key ${key_file} --cert ${cert_file} https://IP-address-for-Elasticsearchmaster-node:9200/_cluster/health?pretty=true
 
+echo -en  "${NC}cas.hosts ( build from consul) ${NC}\n"
+cat /opt/sas/viya/config/etc/cas/default/cas.hosts
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
