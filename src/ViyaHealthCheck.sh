@@ -11,6 +11,9 @@
 #  export ANSIBLE_KEEP_REMOTE_FILES=1
 # ansible.cfg
 
+
+export casID="default"
+
 source /opt/sas/viya/config/consul.conf
 export CONSUL_HTTP_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/client.token)
 export SSL_CERT_FILE=/opt/sas/viya/config/etc/SASSecurityCertificateFramework/cacerts/trustedcerts.pem
@@ -450,6 +453,30 @@ echo ""
 
 #configured caslib
 
+
+echo -en  "${YELLOW}CAS Consul configuration${NC}\n"
+CAS_MODE=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" | grep ${casID} | grep configuration | grep mode  | cut -d "=" -f 2)
+echo "CAS_MODE : "$CAS_MODE
+
+CAS_INITIAL_WORKER_COUNT=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" | grep ${casID} | grep CAS_INITIAL_WORKER_COUNT  | cut -d "=" -f 2)
+echo "CAS_INITIAL_WORKER_COUNT : "$CAS_INITIAL_WORKER_COUNT
+
+SASCONSULHOST=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" |  grep SASCONSULHOST | grep ${casID}  | cut -d "=" -f 2)
+echo "SASCONSULHOST : "$SASCONSULHOST
+
+SASCONTROLLERHOST=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" |  grep SASCONTROLLERHOST | grep ${casID}  | cut -d "=" -f 2)
+echo "SASCONTROLLERHOST : "$SASCONTROLLERHOST
+
+CAS_DISK_CACHE=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" |  grep CAS_DISK_CACHE | grep ${casID}  | cut -d "=" -f 2)
+echo "CAS_DISK_CACHE : "$CAS_DISK_CACHE
+
+SASWORKERHOSTS=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" |  grep SASWORKERHOSTS | grep ${casID}  | cut -d "=" -f 2)
+echo "SASWORKERHOSTS : " $SASWORKERHOSTS
+
+
+echo -en  "${YELLOW}cas.hosts${NC}\n"
+cat /opt/sas/viya/config/etc/cas/default/cas.hosts
+
 echo ""
 echo -en "${RED}************************${NC}\n"   
 echo -en "${RED}*** ELASTICSEARCH ${NC}\n"                                      
@@ -468,8 +495,7 @@ read vault_ip vault_port <<< $(/opt/sas/viya/home/bin/sas-bootstrap-config catal
 /opt/sas/viya/home/SASSecurityCertificateFramework/bin/sas-crypto-management req-vault-cert --common-name "sgadmin" --vault-addr "https://${vault_ip}:${vault_port}" --vault-cafile "${ca_cert}" --vault-token "${vault_token}"  --out-crt "${cert_file}"  --out-form 'pem' --out-key "${key_file}"
 curl --cacert ${ca_cert} --key ${key_file} --cert ${cert_file} https://IP-address-for-Elasticsearchmaster-node:9200/_cluster/health?pretty=true
 
-echo -en  "${NC}cas.hosts ( build from consul) ${NC}\n"
-cat /opt/sas/viya/config/etc/cas/default/cas.hosts
+
 
 echo ""
 echo -en "${RED}************************${NC}\n"   
