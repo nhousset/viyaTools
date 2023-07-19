@@ -1,0 +1,70 @@
+---
+- name: Skip tasks when no tags are provied
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Assert tags are defined
+      assert:
+        that: "'tags' in play_tags"
+        fail_msg: "Tags are required... "
+      run_once: true
+
+- name: SAS Viya CAS/Workers AuditCASSession
+  hosts: cas_workers
+  become: yes
+
+  vars:
+    shell_path: /bin/bash
+    checkmem_proot: /opt/sas/
+    checkmem_path: "{{ checkmem_proot }}/monitoring"
+    checkmem_logs_path: "{{ checkmem_path }}/logs"
+    checkmem_name: AuditCASSession.sh
+    owner: aim
+    group: aimgrp
+    folders:
+      - name: monitoring
+        path: "{{ checkmem_path }}"
+      - name: logs
+        path: "{{ checkmem_logs_path }}"
+
+  tasks:
+    - name: Folders making
+      file:
+        path: "{{ item.path }}"
+        state: directory
+        mode: "0750"
+        owner: "{{ owner }}"
+        group: "{{ group }}"
+      loop: "{{ folders }}"
+      tags:
+        - setup
+
+    - name: AuditCASSession.sh deploying
+      copy:
+        src: "./{{ checkmem_name }}"
+        dest: "{{ checkmem_path }}/{{ checkmem_name }}"
+        mode: "0700"
+        owner: "{{ owner }}"
+        group: "{{ group }}"
+      tags:
+        - setup
+
+    - name: AuditCASSession.sh triggering - START
+      shell: "nohup {{ checkmem_path }}/{{ checkmem_name }} > {{ checkmem_logs_path }}/{{ checkmem_name }}.$(hostname -f).log 2>&1 &"
+      args:
+        executable: "{{ shell_path }}"
+      tags:
+        - start
+
+    - name: AuditCASSession.sh triggering - STOP
+      shell: "pkill -f '{{ checkmem_path }}/{{ checkmem_name }}'"
+      become: yes
+      tags:
+        - stop
+
+    - name: Cleanup - folders & files deletion
+      file:
+        path: "{{ checkmem_proot }}"
+        state: absent
+      tags:
+        - cleanup
