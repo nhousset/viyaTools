@@ -453,7 +453,7 @@ echo ""
 
 #configured caslib
 
-
+# http//MS/casManagement/servers?limit=9999
 echo -en  "${YELLOW}CAS Consul configuration${NC}\n"
 CAS_MODE=$(/opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config | grep -v configurationservice | grep "sas.cas" | grep ${casID} | grep configuration | grep mode  | cut -d "=" -f 2)
 echo "CAS_MODE : "$CAS_MODE
