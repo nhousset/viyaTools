@@ -17,3 +17,10 @@ https://github.com/nhousset/viyaTools/blob/main/msHealthCheck.md
 
 This tool allows you to import files in a VIYA 3.5 platform.
 https://github.com/nhousset/viyaTools/blob/main/importPackage.md
+
+### Audit  identsvcs
+
+https://github.com/nhousset/viyaTools/blob/main/src/audit_identsvc.sh
+
+the two Linux processes identsvcs and launchsvcs authorize and launch the CAS server session. These services must be run as root because, under Linux, the root identity is required to start a running process under another identity. The launchsvcs process creates a CAS session under the identity of the user who submitted the request. The identsvcs process authenticates users when they attempt to connect to a CAS server with a username and password using PAM. ( https://www.nicolas-housset.fr/comprendre-le-demarrage-dune-session-cas/ )
+
