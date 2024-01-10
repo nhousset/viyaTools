@@ -33,7 +33,7 @@ export SAS_CLI_DEFAULT_CAS_SERVER=cas-shared-$CAS_SERVER
 # /opt/sas/viya/home/bin/sas-admin profile set-endpoint http://xxxxxxxxxxxxxxxxxxxxxxxxxx
 # /opt/sas/viya/home/bin/sas-admin auth login --user xxxxxxxxxx 
 
-CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep State)
+CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep -i state)
 if [ "$CASRunning" == "" ]
 then
  	echo "Please connect";
