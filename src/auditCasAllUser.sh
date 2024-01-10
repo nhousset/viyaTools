@@ -1,13 +1,5 @@
 #!/bin/bash 
 
-
-# nomServeur;FrenchDate;USER;CHECK_LSOF;SIZE_IN_CACHE_ALL;SIZE_IN_CACHE_ALL_DELETED;DIFF_CAS_MAP;DF_CACHE_USED;LOAD;CPU;processPID;processCPU;processMEM;processRSS;processVSZ;nbPidCasSession;CASRunning;timeCASRunning;sasAdminConnected;sasAdminConnectedPAM
-
-
-
-
-
-
 export SLEEP_TIME=$1
 export LOG_PATH=$2
 export CAS_DISK_CACHE_PATH=$3
@@ -38,26 +30,22 @@ fi
 export SAS_CLI_DEFAULT_CAS_SERVER=cas-shared-$CAS_SERVER
 
 
-
-# POC
 # /opt/sas/viya/home/bin/sas-admin profile set-endpoint http://xxxxxxxxxxxxxxxxxxxxxxxxxx
 # /opt/sas/viya/home/bin/sas-admin auth login --user xxxxxxxxxx 
+
 CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep State)
 if [ "$CASRunning" == "" ]
 then
-	echo "Please connect";
+ 	echo "Please connect";
 	exit
-
 fi
 
 while [ 1=1 ]
 do
-	
-	
+
 	UnixDate=$(date +%s)
 	FrenchDate=$(date '+%F %T');  
 	nomServeur=$(hostname);
-	
 	
 	dateForLog=`date +%d-%m-%y`
 	export LOG_FILE=$LOG_PATH"/"$dateForLog"-auditCAS.csv";
@@ -71,7 +59,8 @@ do
 	typeset -i somme_RSS=0
 	typeset -i NB_FILE_CACHE_ALL=0
 	typeset -i SIZE_IN_CACHE_ALL=0
-    nbPidCasSession=$(ps -aux | grep -v root | grep "cas session" |  grep -v grep |wc -l)
+ 
+    	nbPidCasSession=$(ps -aux | grep -v root | grep "cas session" |  grep -v grep |wc -l)
 	
 	# DF du CACHE
 	DF_CACHE_USED=$(df | grep  $CAS_DISK_CACHE_PATH | awk '{print $3}')
@@ -80,9 +69,7 @@ do
 	
 	LOAD=$(cat /proc/loadavg | awk '{print $1}' |  sed s/"\."/","/g)
 	CPU=$(sar 1 1 | grep Average| awk '{print $3}' |  sed s/"\."/","/g)
-  
 
-  
 	# On parcours l'ensemble des process CAS
 	for process in $(ps -aux | grep -v root | grep "cas session" | awk '{print $1";"$2";"$3";"$4";"$5";"$6";"$8";"$9";"$13}'  |  grep -v grep )
 	do
