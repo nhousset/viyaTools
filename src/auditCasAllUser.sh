@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export SLEEP_TIME=$1
-export LOG_PATH=$2
-export CAS_SERVER=$3
 
 
 RED='\033[031m'
@@ -17,9 +14,9 @@ helpFunction()
 {
    echo ""
    echo -e "${YELLOW}Usage: $0 -s <sleep time> -o <output dir> -c <cas server> [ optional : -a <admin> ]${NC}"
-   echo "       $0 -s 10 -l \"/tmp\" -c default -a admin
+   echo "       $0 -s 10 -l \"/tmp\" -c default -a admin"
    echo ""
-   echo -e "\s-s SLEEP_TIME"
+   echo -e "\t-s SLEEP_TIME"
    echo -e "\t-o LOG_PATH"
    echo -e "\t-c CAS_SERVER"
    echo -e "\t-a ADMIN"
@@ -28,7 +25,7 @@ helpFunction()
 
 _HOSTNAME="http://localhost"
 
-while getopts "u:p:h:d:" opt
+while getopts "s:o:c:a:" opt
 do
    case "$opt" in
       s ) SLEEP_TIME="$OPTARG" ;;
@@ -57,6 +54,16 @@ then
 fi
 
 export SAS_CLI_DEFAULT_CAS_SERVER=cas-shared-$CAS_SERVER
+
+echo "Launch $0 with :"
+echo "SLEEP_TIME : "$SLEEP_TIME
+echo "LOG_PATH : "$LOG_PATH
+echo "CAS_SERVER : "$CAS_SERVER
+echo "SAS_CLI_DEFAULT_CAS_SERVER : "cas-shared-$CAS_SERVER
+echo "MODE : "$ADMIN
+echo ""
+echo "$0 -h for options"
+echo ""
 
 if [ "$ADMIN" == "admin" ] 
 then
@@ -94,9 +101,6 @@ do
 	typeset -i SIZE_IN_CACHE_ALL=0
 
 	nbPidCasSession=$(ps -aux | grep -v root | grep "cas session" |  grep -v grep |wc -l)
-
-  	# DF du CACHE
-  	#DF_CACHE_USED=$(df | grep  $CAS_DISK_CACHE_PATH | awk '{print $3}')
 
   	# CHARGE et CPU du worker
 
