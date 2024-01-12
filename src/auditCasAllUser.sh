@@ -108,7 +108,7 @@ do
   	CPU=$(sar 1 1 | grep Average| awk '{print $3}' |  sed s/"\."/","/g)
 
   	# On parcours l'ensemble des process CAS
-  	for process in $(ps -aux | grep -v root | grep "cas session" | awk '{print $1";"$2";"$3";"$4";"$5";"$6";"$8";"$9";"$13}'  |  grep -v grep )
+  	for process in $(ps -aux | grep -v root | grep "cas session"  |  grep -v grep | awk '{print $1";"$2";"$3";"$4";"$5";"$6";"$8";"$9";"$13}'  )
   	do
 	
   		processUser=$(echo $process | cut -d ";" -f 1)
@@ -138,6 +138,28 @@ do
 
   	done
 
+ 	# CAS GLOBAL
+ 	process=$(ps -aux | grep -v root | grep "cas join" | grep -v grep | grep -v tkmpicas | awk '{print $1";"$2";"$3";"$4";"$5";"$6";"$8";"$9";"$13}'   )
+
+	processUser=$(echo $process | cut -d ";" -f 1)
+  	processPID=$(echo $process | cut -d ";" -f 2)
+  	processCPU=$(echo $process | cut -d ";" -f 3 |  sed s/"\."/","/g)
+  	processMEM=$(echo $process | cut -d ";" -f 4 |  sed s/"\."/","/g)
+  	processVSZ=$(echo $process | cut -d ";" -f 5 |  sed s/"\."/","/g)
+	processRSS=$(echo $process | cut -d ";" -f 6 |  sed s/"\."/","/g)
+  	CASSessionID=$(echo $process | cut -d ";" -f 9)
+
+  	somme_VSZ=somme_VSZ+$processVSZ
+  	somme_RSS=somme_RSS+$processRSS
+
+  	NB_FILE_CACHE=$(ls -lrt /proc/${processPID}/fd | grep casmap | wc -l)
+  	NB_FILE_CACHE_ALL=NB_FILE_CACHE_ALL+$NB_FILE_CACHE
+
+  	typeset -i SIZE_IN_CACHE=0
+  	SIZE_IN_CACHE=`expr $NB_FILE_CACHE*128*1024*1024`
+
+	echo $nomServeur";"$FrenchDate";GLOBAL;"$CASSessionID";"$processPID";"$NB_FILE_CACHE";"$SIZE_IN_CACHE";"$LOAD";"$CPU";"$processPID";"$processCPU";"$processMEM";"$processRSS";"$processVSZ";"$nbPidCasSession";0;0;0;0"  | tee -a $LOG_FILE
+  
   	SIZE_IN_CACHE_ALL=SIZE_IN_CACHE_ALL+`expr $NB_FILE_CACHE_ALL*128*1024*1024`
 
  	if [ "$ADMIN" == "admin" ] 
