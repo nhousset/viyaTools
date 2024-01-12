@@ -4,34 +4,73 @@ export SLEEP_TIME=$1
 export LOG_PATH=$2
 export CAS_SERVER=$3
 
+
+RED='\033[031m'
+GREEN='\033[032m'
+YELLOW='\033[033m'
+BLUE='\033[034m'
+NC='\033[0m' 
+
+
+
+helpFunction()
+{
+   echo ""
+   echo -e "${YELLOW}Usage: $0 -s <sleep time> -o <output dir> -c <cas server> [ optional : -a <admin> ]${NC}"
+   echo "       $0 -s 10 -l \"/tmp\" -c default -a admin
+   echo ""
+   echo -e "\s-s SLEEP_TIME"
+   echo -e "\t-o LOG_PATH"
+   echo -e "\t-c CAS_SERVER"
+   echo -e "\t-a ADMIN"
+   exit 1 # Exit script after printing help
+}
+
+_HOSTNAME="http://localhost"
+
+while getopts "u:p:h:d:" opt
+do
+   case "$opt" in
+      s ) SLEEP_TIME="$OPTARG" ;;
+      o ) LOG_PATH="$OPTARG" ;;
+      c ) CAS_SERVER="$OPTARG" ;;
+      a ) ADMIN="$OPTARG" ;;
+      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
+   esac
+done
+
+# Begin script in case all parameters are correct
+
 if [ "$SLEEP_TIME" == "" ]
 then
-export SLEEP_TIME=30
+	SLEEP_TIME=30
 fi
-
 
 if [ "$LOG_PATH" == "" ]
 then
-export LOG_PATH="/tmp"
+	LOG_PATH="/tmp"
 fi
 
-if [ "$CAS_DISK_CACHE_PATH" == "" ]
+if [ "$CAS_SERVER" == "" ]
 then
-export CAS_DISK_CACHE_PATH="/opt/sastmp/"
+	CAS_SERVER="default"
 fi
-
 
 export SAS_CLI_DEFAULT_CAS_SERVER=cas-shared-$CAS_SERVER
 
-
-# /opt/sas/viya/home/bin/sas-admin profile set-endpoint http://xxxxxxxxxxxxxxxxxxxxxxxxxx
-# /opt/sas/viya/home/bin/sas-admin auth login --user xxxxxxxxxx
-
-CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep -i state)
-if [ "$CASRunning" == "" ]
+if [ "$ADMIN" == "admin" ] 
 then
-echo "Please connect";
-exit
+	# /opt/sas/viya/home/bin/sas-admin profile set-endpoint http://xxxxxxxxxxxxxxxxxxxxxxxxxx
+	# /opt/sas/viya/home/bin/sas-admin auth login --user xxxxxxxxxx
+
+	CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep -i state)
+	if [ "$CASRunning" == "" ]
+	then
+		echo "Admin Mode - Please connect to viya ";
+ 		echo "/opt/sas/viya/home/bin/sas-admin profile set-endpoint http://xxxxxxxxxxxxxxxxxxxxxxxxxx";
+ 		echo "/opt/sas/viya/home/bin/sas-admin auth login --user xxxxxxxxxx";
+		exit
+	fi
 fi
 
 while [ 1=1 ]
@@ -97,22 +136,24 @@ do
 
   	SIZE_IN_CACHE_ALL=SIZE_IN_CACHE_ALL+`expr $NB_FILE_CACHE_ALL*128*1024*1024`
 
-  	# check via sas-admin du temps de reponse de CAS
-  	CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep State  | awk '{print $2}')
-  	if [ "$CASRunning" == "running" ]
-  	then
-  		CASRunning=1
-  	else
-  		CASRunning=0
-  	fi
-  	timeCASRunning=$(tail -1 /tmp/showinfo.time |  cut -d ":" -f 2 |  sed s/"\."/","/g)
+ 	if [ "$ADMIN" == "admin" ] 
+	then
+	  	# check via sas-admin du temps de reponse de CAS
+	  	CASRunning=$(/usr/bin/time -ao /tmp/showinfo.time -f "%E" /opt/sas/viya/home/bin/sas-admin cas servers show-info | grep State  | awk '{print $2}')
+	  	if [ "$CASRunning" == "running" ]
+	  	then
+  			CASRunning=1
+  		else
+	  		CASRunning=0
+	  	fi
+	  	timeCASRunning=$(tail -1 /tmp/showinfo.time |  cut -d ":" -f 2 |  sed s/"\."/","/g)
 
-  	# Nombre d'utilisateur connecté
-  	sasAdminConnected=$(/opt/sas/viya/home/bin/sas-admin cas sessions list --superuser --all | grep "Connected" | wc -l)
+	  	# Nombre d'utilisateur connecté
+	  	sasAdminConnected=$(/opt/sas/viya/home/bin/sas-admin cas sessions list --superuser --all | grep "Connected" | wc -l)
 
-  	# Nombre d'utilisateur connecté via PAM
-  	sasAdminConnectedPAM=$(/opt/sas/viya/home/bin/sas-admin cas sessions list --superuser --all | grep "Connected" | grep "PAM" | wc -l)
-
+	  	# Nombre d'utilisateur connecté via PAM
+	  	sasAdminConnectedPAM=$(/opt/sas/viya/home/bin/sas-admin cas sessions list --superuser --all | grep "Connected" | grep "PAM" | wc -l)
+	fi
    	echo $nomServeur";"$FrenchDate";ALL;ALL;"$NB_FILE_CACHE_ALL";"$SIZE_IN_CACHE_ALL";"$DF_CACHE_USED";"$LOAD";"$CPU";0;0;0;"$somme_RSS";"$somme_VSZ";"$nbPidCasSession";"$CASRunning";"$timeCASRunning";"$sasAdminConnected";"$sasAdminConnectedPAM | tee -a $LOG_FILE
 
   	chmod 777 $LOG_FILE
