@@ -292,6 +292,8 @@ fi
 export CONSUL_TOKEN=$(cat /opt/sas/viya/config/etc/SASSecurityCertificateFramework/tokens/consul/default/management.token)
 /opt/sas/viya/home/bin/sas-bootstrap-config kv read --recurse config > /tmp/sas-bootstrap-config
 
+
+
 echo ""
 echo -en "${RED}************************${NC}\n"   
 echo -en "${RED}*** CONSUL${NC}\n"                                      
@@ -442,6 +444,32 @@ then
     	fi
 	fi
 	echo -en  $SASDrive"\n"
+
+
+ 	echo ""
+	echo -en "${RED}************************${NC}\n"   
+	echo -en "${RED}*** Specific configuration ${NC}\n"                                      
+	echo -en "${RED}************************${NC}\n"   
+	echo ""
+	echo -en  "${YELLOW}Timeout${NC}\n"
+
+ 	# https://documentation.sas.com/doc/en/calcdc/3.5/calconfig/n08025sasconfiguration0admin.htm 
+ 	accessTokenValiditySeconds=$(grep policy.accessTokenValiditySeconds /tmp/sas-bootstrap-config | grep -v name )
+	echo "policy.accessTokenValiditySecond : "$accessTokenValiditySeconds
+ 
+   	accessTokenValiditySecondsGlobal=$(grep policy.global.accessTokenValiditySeconds /tmp/sas-bootstrap-config | grep -v name )
+  	echo " policy.global.accessTokenValiditySeconds : "$accessTokenValiditySecondsGlobal
+
+   	
+   
+	petrichorTimeout=$(cat /etc/httpd/conf.d/petrichor.conf  | grep -i timeout | grep -v \# | grep -v KeepAliveTimeout)
+	echo "timeout petrichor.conf : "$petrichorTimeout
+ 
+  	# https://documentation.sas.com/doc/en/calcdc/3.5/calconfig/n03000sasconfiguration0admin.htm
+   	servletSessionTimeout=$(grep servlet.session.timeout /tmp/sas-bootstrap-config | grep -v name )
+  	echo " servlet.session.timeout : "$servletSessionTimeout
+   	
+ 
 
 fi
 
