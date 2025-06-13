@@ -24,8 +24,9 @@ run;
   run;
 
   proc cas;
-    table.tableExists result=tbl / caslib="casuser", name="session_&session_id._table";
-    if tbl.exists then
+   table.tableInfo / caslib="casuser", name="session_&session_id._table";
+   table.tableExists result=tbl / caslib="casuser", name="session_&session_id._table";
+   if tbl.exists then
       print "Table session_&session_id._table is loaded in memory.";
   quit;
 
@@ -45,6 +46,12 @@ run;
     end_time = &end_time;
     duration = &duration;
   run;
+
+
+PROC CAS SESSREF=mySession;
+    /* Utilise l'action tableInfo pour obtenir les métadonnées de la table */
+    table.tableInfo result=r / table={caslib="Public", name="benchmark_table_cas"};
+RUN;
 
 %mend;
 
