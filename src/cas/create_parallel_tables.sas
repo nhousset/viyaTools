@@ -1,45 +1,44 @@
-%macro create_parallel_tables_v2(num_sessions=5, table_size_gb=2);
+%let nb_sessions = 5; /* nombre de sessions à lancer */
+%let table_size_gb = 2; /* taille approximative de chaque table en Go */
+%let rows_per_gb = 1000000; /* estimation du nombre de lignes par Go */
+%let nrows = %eval(&table_size_gb * &rows_per_gb);
 
+/* Créer une macro pour générer des données et les charger en mémoire */
+%macro create_and_load(session_id);
+  cas cas_session_&session_id;
+
+  /* Création de la session CAS */
+  caslib mycaslib datasource=(srctype="path") path="/tmp/casdata/session_&session_id";
+
+  /* Génération des données */
+  data caslib.session_&session_id._table promote;
+    length id 8 value $20;
+    do i = 1 to &nrows;
+      id = i;
+      value = cats("val_", put(i, 8.));
+      output;
+    end;
+  run;
+
+  /* Monter la table en mémoire */
   proc cas;
-    session mySession;
-
-    /* 1. Définir le code comme une chaîne de caractères (string).
-       Notez l'utilisation de 'i' et 'table_size_gb' comme des variables normales. */
-    pgm_code = "
-      data casuser.heavy_table_' || i || ' (promote=yes);
-        length text $200;
-        do k = 1 to (table_size_gb * 1024**3) / 208;
-          num_var = k;
-          text = repeat('SAS Viya', 25);
-          output;
-        end;
-      run;
-
-      action table.tableInfo / name='heavy_table_' || i, caslib='casuser';
-    ";
-
-    /* 2. Boucle pour lancer les sessions */
-    do i = 1 to &num_sessions;
-      /* 3. Lancer la session, exécuter le code de la variable 'pgm_code'
-            et passer les valeurs nécessaires via le paramètre 'vars'. */
-      create_parallel_session session=mySession name="session_" || i
-          code=pgm_code
-          vars={i=i, table_size_gb=&table_size_gb};
-    end;
-
-    /* Attente de la fin de toutes les sessions */
-    do i = 1 to &num_sessions;
-      wait_for_next_action "session_" || i;
-    end;
-
-    /* Vérification */
-    action table.tableInfo / caslib='casuser';
-    run;
+    table.loadTable /
+      path="session_&session_id._table.sashdat",
+      caslib="mycaslib",
+      casout={name="session_&session_id._inmem", promote=true};
   quit;
 
-%mend create_parallel_tables_v2;
+  /* Fin de la session */
+  cas cas_session_&session_id terminate;
+%mend;
 
+/* Lancer les sessions en parallèle (via rsubmit si multi-session possible) */
+%macro parallel_create_load(nb_sessions);
+  %do i = 1 %to &nb_sessions;
+    /* Utiliser systask ou un scheduler si vrai parallélisme souhaité */
+    %create_and_load(&i)
+  %end;
+%mend;
 
-/* === EXEMPLE D'APPEL === */
-/* Lancer 3 sessions, chacune créant une table de 1 Go */
-%create_parallel_tables_v2(num_sessions=3, table_size_gb=1);
+/* Exécution */
+%parallel_create_load(&nb_sessions);
