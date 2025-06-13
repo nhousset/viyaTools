@@ -36,6 +36,7 @@ run;
  
   proc cas;
    table.tableInfo / caslib="casuser", name="session_&session_id._table";
+   table.tableDetails / caslib="casuser", name="session_&session_id._table";
    table.tableExists result=tbl / caslib="casuser", name="session_&session_id._table";
    if tbl.exists then
       print "Table session_&session_id._table is loaded in memory.";
@@ -88,4 +89,4 @@ quit;
 
 cas terminate;
 
-%terminate_all_session(&nb_sessions)
+%terminate_all_session(&nb_sessions);
