@@ -1,14 +1,20 @@
-%let nb_sessions = 5; /* nombre de sessions à lancer */
-%let table_size_gb = 2; /* taille approximative de chaque table en Go */
-%let rows_per_gb = 1000000; /* estimation du nombre de lignes par Go */
+/* Ajouter des mesures de temps et un rapport sur les tables créées */
+%let nb_sessions = 5;
+%let table_size_gb = 2;
+%let rows_per_gb = 1000000;
 %let nrows = %eval(&table_size_gb * &rows_per_gb);
 
-/* Créer une macro pour générer des données et les charger en mémoire */
+/* Tableau pour stocker les timings */
+data timings;
+  length session $10 start_time end_time duration 8.;
+  stop;
+run;
+
 %macro create_and_load(session_id);
+  %let start_time = %sysfunc(datetime());
   cas cas_session_&session_id;
 
-  /* Génération des données directement dans casuser */
-  data session_&session_id._table;
+  data casuser.session_&session_id._table(promote=yes);
     length id 8 value $20;
     do i = 1 to &nrows;
       id = i;
@@ -17,24 +23,46 @@
     end;
   run;
 
-  /* Vérification de la table chargée en mémoire */
   proc cas;
     table.tableExists result=tbl / caslib="casuser", name="session_&session_id._table";
     if tbl.exists then
       print "Table session_&session_id._table is loaded in memory.";
   quit;
 
-  /* Fin de la session */
   cas cas_session_&session_id terminate;
+
+  %let end_time = %sysfunc(datetime());
+  %let duration = %sysevalf(&end_time - &start_time);
+
+  data timings; 
+    set timings 
+        work._timing;
+  run;
+
+  data work._timing;
+    session = "&session_id";
+    start_time = &start_time;
+    end_time = &end_time;
+    duration = &duration;
+  run;
+
 %mend;
 
-/* Lancer les sessions en parallèle (via rsubmit si multi-session possible) */
 %macro parallel_create_load(nb_sessions);
   %do i = 1 %to &nb_sessions;
-    /* Utiliser systask ou un scheduler si vrai parallélisme souhaité */
     %create_and_load(&i)
   %end;
+
+  /* Génération du rapport de tables */
+  proc cas;
+    table.tableInfo result=tbls / caslib="casuser";
+    print tbls.tableInfo;
+  quit;
+
+  /* Affichage du rapport de timing */
+  proc print data=timings;
+    title "Temps de création des tables CAS";
+  run;
 %mend;
 
-/* Exécution */
 %parallel_create_load(&nb_sessions);
