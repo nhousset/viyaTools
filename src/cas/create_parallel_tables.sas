@@ -7,11 +7,11 @@
 %macro create_and_load(session_id);
   cas cas_session_&session_id;
 
-  /* Création de la session CAS */
-  caslib mycaslib datasource=(srctype="path") path="/tmp/casdata/session_&session_id";
+  /* Utilisation du caslib casuser pour stocker les données */
+  caslib mycaslib caslib=casuser;
 
-  /* Génération des données */
-  data caslib.session_&session_id._table promote;
+  /* Génération des données directement dans casuser */
+  data casuser.session_&session_id._table(promote=yes);
     length id 8 value $20;
     do i = 1 to &nrows;
       id = i;
@@ -20,12 +20,11 @@
     end;
   run;
 
-  /* Monter la table en mémoire */
+  /* Vérification de la table chargée en mémoire */
   proc cas;
-    table.loadTable /
-      path="session_&session_id._table.sashdat",
-      caslib="mycaslib",
-      casout={name="session_&session_id._inmem", promote=true};
+    table.tableExists result=tbl / caslib="casuser", name="session_&session_id._table";
+    if tbl.exists then
+      print "Table session_&session_id._table is loaded in memory.";
   quit;
 
   /* Fin de la session */
