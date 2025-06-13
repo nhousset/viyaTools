@@ -7,11 +7,8 @@
 %macro create_and_load(session_id);
   cas cas_session_&session_id;
 
-  /* Utilisation du caslib casuser pour stocker les données */
-  caslib mycaslib caslib=casuser;
-
   /* Génération des données directement dans casuser */
-  data casuser.session_&session_id._table(promote=yes);
+  data session_&session_id._table;
     length id 8 value $20;
     do i = 1 to &nrows;
       id = i;
