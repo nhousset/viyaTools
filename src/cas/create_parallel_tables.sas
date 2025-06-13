@@ -53,12 +53,6 @@ run;
     %create_and_load(&i)
   %end;
 
-  /* Génération du rapport de tables */
-  proc cas;
-    table.tableInfo result=tbls / caslib="casuser";
-    print tbls.tableInfo;
-  quit;
-
   /* Affichage du rapport de timing */
   proc print data=timings;
     title "Temps de création des tables CAS";
