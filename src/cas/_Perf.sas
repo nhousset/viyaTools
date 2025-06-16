@@ -2,7 +2,7 @@ cas mysess sessopts=(caslib="casuser", metrics=true);
 
 caslib _all_ assign;
 
-data casuser.cars,
+data casuser.cars;
 set sashelp.cars;
 run;
 
