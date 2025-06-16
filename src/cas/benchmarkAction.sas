@@ -1,45 +1,53 @@
-%macro benchmarkAction(action_call);
-    PROC CAS;
-        /* Exécuter l'action passée en paramètre */
-        &action_call;
+%macro benchmarkAction(
+    action=,        /* Action CAS à exécuter (ex: simple.summary) */
+    params=,        /* Paramètres de l'action (ex: table={...} inputs={...}) */
+    result_var=r    /* Variable CASL pour stocker le résultat (optionnel) */
+);
+    %local start_time end_time elapsed_time;
+    %let start_time = %sysfunc(time());
 
-        /* Capturer les métriques de performance depuis _Perf */
-        perf_dict = _Perf;
-        elapsed = perf_dict;
-        cpu_user = perf_dict;
-        cpu_sys = perf_dict;
-        memory = perf_dict["Memory"];
-        
-        /* Promouvoir les métriques vers des variables macro */
-        call symputx('BM_ELAPSED_TIME', elapsed, 'G');
-        call symputx('BM_CPU_USER_TIME', cpu_user, 'G');
-        call symputx('BM_CPU_SYSTEM_TIME', cpu_sys, 'G');
-        call symputx('BM_MEMORY', memory, 'G');
-        
-        /* Afficher un résumé */
-        print "--- Benchmark Results ---";
-        print "Elapsed Time: " |
-| put(elapsed, 8.4);
-        print "CPU Time (User): " |
-| put(cpu_user, 8.4);
-        print "Memory: " |
-| put(memory, best12.);
-        print "-------------------------";
-    RUN;
-    QUIT;
+    /* --- Début du bloc de test --- */
+    proc cas;
+        /* Affichage de l'action testée */
+        print "--- Benchmarking Action: &action ---";
 
-    %put NOTE: Benchmark complete. Results available in macro variables BM_ELAPSED_TIME, etc.;
+        /* Exécution de l'action en capturant le statut et les métriques de performance */
+        &action result=&result_var status=cas_status / &params;
+
+        /* Capture des métriques de performance */
+        bm_perf = _Perf;
+        
+        /* Vérification du statut de l'exécution */
+        if cas_status.severity > 1 then do;
+            print "ERROR: L'action a échoué. Statut:";
+            print cas_status;
+        end;
+        else do;
+            print "SUCCESS: L'action s'est terminée.";
+            print "--- Performance Metrics ---";
+            print bm_perf;
+        end;
+    run;
+    quit;
+    /* --- Fin du bloc de test --- */
+
+    %let end_time = %sysfunc(time());
+    %let elapsed_time = %sysevalf(&end_time - &start_time, F);
+
+    %put &=elapsed_time;
+    %put NOTE: Le benchmark complet de l'action a pris &elapsed_time secondes.;
 %mend benchmarkAction;
 
 cas  sessopts=(caslib="casuser", metrics=true);
 
 caslib _all_ assign;
 
-/* --- Utilisation de la macro --- */
+/* --- Utilisation de la macro corrigée --- */
 %benchmarkAction(
-    action_call = simple.summary result=r / 
-                  table={name="CARS", caslib="CASUSER"} 
-                  inputs={"MSRP", "Invoice"};
+    action     = simple.summary,
+    result_var = r,
+    params     = table={name="CARS", caslib="CASUSER"}
+                 inputs={"MSRP", "Invoice"}
 );
 
 /* Afficher les résultats capturés */
