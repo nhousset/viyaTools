@@ -1,148 +1,266 @@
-*--- Options globales pour le suivi des performances ---*;
-OPTIONS FULLSTIMER;
+/* ========================================================================
+   BENCHMARK CAS POUR SAS VIYA 4
+   Description: Script de benchmark pour évaluer les performances de CAS
+   Date: 2025
+   ======================================================================== */
 
-*--- 1. Configuration de l'environnement et démarrage de la session CAS ---*;
-CAS mySession SESSOPTS=(METRICS=TRUE TIMEOUT=900 LOCALE="fr_FR");
-LIBNAME mycas CAS SESSREF=mySession;
+/* Connexion à CAS */
+cas mysession sessopts=(caslib=casuser timeout=1800 locale="en_US");
 
-*--- 2. Préparation des données de test (côté client SAS) ---*;
-%LET nombre_observations = 10000000;
-%LET nombre_variables_numeriques = 10;
-%LET nombre_variables_caracteres = 5;
+/* Création de la caslib pour les données de test */
+caslib _all_ assign;
 
-DATA work.benchmark_data_large;
-    ARRAY nums_arr{&nombre_variables_numeriques};
-    ARRAY chars_arr{&nombre_variables_caracteres} $20;
-    DO i = 1 TO &nombre_observations;
-        DO j = 1 TO &nombre_variables_numeriques;
-            nums_arr{j} = RAND('UNIFORM') * 1000;
-        END;
-        DO k = 1 TO &nombre_variables_caracteres;
-            chars_arr{k} = COMPRESS('Texte_Exemple_' || PUT(RAND('INTEGER', 1, 10000), Z5.));
-        END;
-        id_obs = _N_;
-        OUTPUT;
-    END;
-    DROP i j k;
-    RENAME nums_arr1-nums_arr&nombre_variables_numeriques=num1-num&nombre_variables_numeriques
-           chars_arr1-chars_arr&nombre_variables_caracteres=char1-char&nombre_variables_caracteres;
-RUN;
+/* ========================================================================
+   SECTION 1: GÉNÉRATION DES DONNÉES DE TEST
+   ======================================================================== */
 
-TITLE "Début du Benchmark du Moteur CAS sur Viya 4";
-NOTE "Les temps d'exécution et les métriques seront visibles dans le journal SAS et dans le rapport final.";
-
-*--- 3. Benchmark du chargement des données vers CAS ---*;
-%let start_load = %sysfunc(datetime()); /* Démarrage du chronomètre */
-
-PROC CASUTIL SESSREF=mySession;
-    DROPTABLE CASDATA="benchmark_table_cas" INCASLIB="Public" QUIET; 
-    LOAD DATA=work.benchmark_data_large
-         CASOUT="benchmark_table_cas" 
-         INCASLIB="Public" /* Utilisation de la caslib Public */
-         PROMOTE REPLACE;
-QUIT;
-
-%let end_load = %sysfunc(datetime()); /* Arrêt du chronomètre */
-
-*--- 4. Capture de la consommation mémoire de la table ---*;
-PROC CAS SESSREF=mySession;
-    /* Utilise l'action tableInfo pour obtenir les métadonnées de la table */
-    table.tableInfo result=r / table={caslib="Public", name="benchmark_table_cas"};
-RUN;
-
-/* Extrait la taille (en octets) du résultat et la convertit en Mo dans une macro-variable */
-DATA _NULL_;
-    SET r.TableInfo; 
-    mem_mb = DataSize / (1024*1024); 
-    CALL SYMPUTX('table_memory_mb', mem_mb, 'G');
-RUN;
-QUIT;
-
-
-*--- 5. Benchmark d'une étape DATA dans CAS ---*;
-%let start_datastep = %sysfunc(datetime()); /* Démarrage du chronomètre */
-
-PROC CAS SESSREF=mySession;
-    DATastep.runCode /
-    CODE = "
-        /* Les tables d'entrée et de sortie sont dans la caslib Public */
-        DATA Public.benchmark_data_transformed;
-            SET Public.benchmark_table_cas;
-
-            ARRAY nums_arr[*] num: ;
-            sum_numeriques = SUM(OF nums_arr[*]);
-            length_char1 = LENGTH(char1);
-
-            IF MOD(id_obs, 100) = 0 THEN DO;
-                new_var_conditionnelle = RAND('NORMAL', 50, 5);
-            END;
-            ELSE new_var_conditionnelle = .;
-        RUN;
-    ";
-RUN;
-QUIT;
-
-%let end_datastep = %sysfunc(datetime()); /* Arrêt du chronomètre */
-
-*--- 6. Benchmark d'une procédure analytique dans CAS (PROC MEANS) ---*;
-%let start_procmeans = %sysfunc(datetime()); /* Démarrage du chronomètre */
-
-PROC MEANS DATA=mycas.benchmark_table_cas(caslib="Public") /* Spécification de la caslib Public */
-          NOPRINT SESSREF=mySession;
-    VAR num1 num2 num3;
-    OUTPUT OUT=mycas.summary_stats(caslib="Public" REPLACE=YES PROMOTE=YES); /* Sortie vers Public */
-RUN;
-
-%let end_procmeans = %sysfunc(datetime()); /* Arrêt du chronomètre */
-
-*--- 7. Création et affichage du rapport final ---*;
-
-/* Calcul des durées pour chaque étape */
-%let load_duration = %sysevalf(&end_load - &start_load);
-%let datastep_duration = %sysevalf(&end_datastep - &start_datastep);
-%let procmeans_duration = %sysevalf(&end_procmeans - &start_procmeans);
-
-/* Création de la table de rapport */
-DATA work.final_report;
-    LENGTH Etape $ 50 Valeur $ 50;
+/* Génération d'un grand dataset pour les tests */
+data casuser.benchmark_data;
+    format start_time datetime20.;
+    start_time = datetime();
+    put "Début génération des données: " start_time datetime20.;
     
-    Etape = "Chargement des données vers CAS (secondes)";
-    Valeur = STRIP(PUT(&load_duration, 8.2));
-    OUTPUT;
+    do i = 1 to 10000000; /* 10 millions d'observations */
+        customer_id = i;
+        region = cats("Region_", ceil(ranuni(123) * 10));
+        product_category = cats("Category_", ceil(ranuni(456) * 20));
+        sales_amount = round(ranuni(789) * 10000, 0.01);
+        quantity = ceil(ranuni(321) * 100);
+        discount_rate = round(ranuni(654) * 0.3, 0.01);
+        transaction_date = today() - ceil(ranuni(987) * 365);
+        customer_age = 18 + ceil(ranuni(159) * 62);
+        satisfaction_score = 1 + ceil(ranuni(753) * 10);
+        output;
+    end;
+    
+    format end_time datetime20.;
+    end_time = datetime();
+    put "Fin génération des données: " end_time datetime20.;
+    put "Durée génération: " (end_time - start_time) "secondes";
+run;
 
-    Etape = "Étape DATA dans CAS (secondes)";
-    Valeur = STRIP(PUT(&datastep_duration, 8.2));
-    OUTPUT;
+/* Chargement des données dans CAS */
+%let start_load = %sysfunc(datetime());
+proc casutil;
+    load data=casuser.benchmark_data outcaslib="casuser" 
+         casout="benchmark_data" replace;
+quit;
+%let end_load = %sysfunc(datetime());
 
-    Etape = "PROC MEANS dans CAS (secondes)";
-    Valeur = STRIP(PUT(&procmeans_duration, 8.2));
-    OUTPUT;
+%put NOTE: Durée chargement CAS: %sysevalf(&end_load - &start_load) secondes;
 
-    Etape = "Consommation mémoire de la table (Mo)";
-    Valeur = STRIP(PUT(&table_memory_mb, 8.2));
-    OUTPUT;
-RUN;
+/* ========================================================================
+   SECTION 2: TESTS DE PERFORMANCE CAS
+   ======================================================================== */
 
-/* Affichage du rapport */
-TITLE "Rapport Final du Benchmark";
-PROC PRINT DATA=work.final_report NOOBS LABEL;
-    LABEL Etape="Étape du Benchmark"
-          Valeur="Résultat";
-RUN;
-TITLE;
+/* Macro pour mesurer le temps d'exécution */
+%macro measure_time(test_name, code);
+    %let start_time = %sysfunc(datetime());
+    %put NOTE: === Début du test: &test_name ===;
+    
+    &code;
+    
+    %let end_time = %sysfunc(datetime());
+    %let duration = %sysevalf(&end_time - &start_time);
+    %put NOTE: === Fin du test: &test_name - Durée: &duration secondes ===;
+    
+    /* Enregistrement des résultats */
+    data _temp_result;
+        test_name = "&test_name";
+        duration = &duration;
+        timestamp = datetime();
+        format timestamp datetime20.;
+    run;
+    
+    proc append base=benchmark_results data=_temp_result force;
+    run;
+%mend;
 
+/* Initialisation de la table des résultats */
+data benchmark_results;
+    length test_name $50;
+    format timestamp datetime20.;
+    delete;
+run;
 
-*--- 8. Nettoyage ---*;
-TITLE "Nettoyage des tables CAS";
-PROC CASUTIL SESSREF=mySession;
-    /* Suppression des tables dans la caslib Public */
-    DROPTABLE CASDATA="benchmark_table_cas" INCASLIB="Public" QUIET;
-    DROPTABLE CASDATA="benchmark_data_transformed" INCASLIB="Public" QUIET;
-    DROPTABLE CASDATA="summary_stats" INCASLIB="Public" QUIET;
-QUIT;
-TITLE;
+/* TEST 1: Agrégation simple */
+%measure_time(
+    Agregation_Simple,
+    proc cas;
+        simple.summary / 
+            table={name="benchmark_data", caslib="casuser"}
+            inputs={"sales_amount", "quantity"}
+            subSet={"region"}
+            casout={name="agg_results1", caslib="casuser", replace=true};
+    quit;
+);
 
-*--- Arrêt de la session CAS ---*;
-CAS mySession TERMINATE;
+/* TEST 2: Jointure */
+%measure_time(
+    Jointure_Auto,
+    data casuser.benchmark_data_copy;
+        set casuser.benchmark_data;
+        join_key = customer_id;
+    run;
+    
+    proc cas;
+        datastep.runcode /
+            code="
+                data casuser.join_result;
+                    merge casuser.benchmark_data(in=a) 
+                          casuser.benchmark_data_copy(in=b rename=(sales_amount=sales_amount2));
+                    by customer_id;
+                    if a and b and customer_id <= 1000000;
+                run;
+            ";
+    quit;
+);
 
-OPTIONS NOFULLSTIMER;
+/* TEST 3: Tri de gros volume */
+%measure_time(
+    Tri_Gros_Volume,
+    proc cas;
+        simple.distinct /
+            table={name="benchmark_data", caslib="casuser"}
+            inputs={"region", "product_category", "customer_age"}
+            casout={name="sorted_data", caslib="casuser", replace=true};
+    quit;
+);
+
+/* TEST 4: Analyse statistique avancée */
+%measure_time(
+    Stats_Avancees,
+    proc cas;
+        simple.correlation /
+            table={name="benchmark_data", caslib="casuser"}
+            inputs={"sales_amount", "quantity", "discount_rate", "customer_age", "satisfaction_score"};
+    quit;
+);
+
+/* TEST 5: Transformation de données */
+%measure_time(
+    Transformation_Donnees,
+    proc cas;
+        datastep.runcode /
+            code="
+                data casuser.transformed_data;
+                    set casuser.benchmark_data;
+                    
+                    /* Transformations diverses */
+                    log_sales = log(sales_amount + 1);
+                    sales_per_unit = sales_amount / quantity;
+                    discounted_sales = sales_amount * (1 - discount_rate);
+                    age_category = case 
+                        when customer_age < 30 then 'Young'
+                        when customer_age < 50 then 'Middle'
+                        else 'Senior'
+                    end;
+                    
+                    /* Calculs conditionnels */
+                    if satisfaction_score >= 8 then high_satisfaction = 1;
+                    else high_satisfaction = 0;
+                    
+                    /* Formatage des dates */
+                    year_transaction = year(transaction_date);
+                    month_transaction = month(transaction_date);
+                run;
+            ";
+    quit;
+);
+
+/* TEST 6: Analyse de fréquence */
+%measure_time(
+    Analyse_Frequence,
+    proc cas;
+        simple.freq /
+            table={name="benchmark_data", caslib="casuser"}
+            inputs={"region", "product_category"}
+            includeMissing=false;
+    quit;
+);
+
+/* TEST 7: Machine Learning - Régression */
+%measure_time(
+    ML_Regression,
+    proc cas;
+        regression.glm /
+            table={name="benchmark_data", caslib="casuser"}
+            model={depVar="sales_amount", 
+                   effects={"quantity", "discount_rate", "customer_age", "satisfaction_score"}}
+            output={casOut={name="regression_results", caslib="casuser", replace=true},
+                    copyvars={"customer_id"}};
+    quit;
+);
+
+/* ========================================================================
+   SECTION 3: INFORMATIONS SYSTÈME ET CAS
+   ======================================================================== */
+
+/* Informations sur la session CAS */
+proc cas;
+    builtins.serverStatus;
+    builtins.getCasLibInfo;
+quit;
+
+/* Informations sur les performances système */
+proc cas;
+    table.tableInfo / caslib="casuser";
+quit;
+
+/* ========================================================================
+   SECTION 4: COMPILATION ET AFFICHAGE DES RÉSULTATS
+   ======================================================================== */
+
+/* Résumé des performances */
+proc cas;
+    simple.summary /
+        table={name="benchmark_results"}
+        inputs={"duration"}
+        casout={name="perf_summary", caslib="casuser", replace=true};
+quit;
+
+/* Affichage des résultats détaillés */
+proc print data=benchmark_results;
+    title "Résultats détaillés du benchmark CAS";
+    format timestamp datetime20. duration 8.2;
+run;
+
+/* Graphique des performances */
+proc sgplot data=benchmark_results;
+    title "Durée d'exécution par test CAS";
+    hbar test_name / response=duration 
+                     categoryorder=respdesc
+                     fillattrs=(color=lightblue);
+    xaxis label="Durée (secondes)" grid;
+    yaxis label="Tests";
+run;
+
+/* Statistiques de synthèse */
+proc means data=benchmark_results n mean std min max;
+    title "Statistiques de synthèse des performances CAS";
+    var duration;
+run;
+
+/* ========================================================================
+   SECTION 5: NETTOYAGE
+   ======================================================================== */
+
+/* Suppression des tables temporaires */
+proc cas;
+    table.dropTable / name="benchmark_data" caslib="casuser" quiet=true;
+    table.dropTable / name="benchmark_data_copy" caslib="casuser" quiet=true;
+    table.dropTable / name="agg_results1" caslib="casuser" quiet=true;
+    table.dropTable / name="join_result" caslib="casuser" quiet=true;
+    table.dropTable / name="sorted_data" caslib="casuser" quiet=true;
+    table.dropTable / name="transformed_data" caslib="casuser" quiet=true;
+    table.dropTable / name="regression_results" caslib="casuser" quiet=true;
+    table.dropTable / name="perf_summary" caslib="casuser" quiet=true;
+quit;
+
+/* Fermeture de la session CAS */
+cas mysession terminate;
+
+%put NOTE: ========================================================;
+%put NOTE: BENCHMARK CAS TERMINÉ;
+%put NOTE: Consultez les résultats dans la table benchmark_results;
+%put NOTE: ========================================================;
