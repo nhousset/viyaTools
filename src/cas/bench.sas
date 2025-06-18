@@ -35,8 +35,6 @@ data casuser.benchmark_data;
     
     format end_time datetime20.;
     end_time = datetime();
-    put "Fin génération des données: " end_time datetime20.;
-    put "Durée génération: " (end_time - start_time) "secondes";
 run;
 
 /* Chargement des données dans CAS */
